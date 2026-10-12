@@ -1,0 +1,2847 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description"
+        content="PKJ AI - Next-generation Intelligent Assistant designed and developed by Prashant Jha. Powered by interactive 3D developer workspace, LLaMA 3.3, MCP tools, and multimodal capabilities.">
+    <link rel="icon" href="img/favicon.ico" type="image/icon">
+    <title>PKJ AI — Prashant Jha AI Assistant</title>
+
+    <!-- Google Fonts: Outfit for display, Plus Jakarta Sans for body, JetBrains Mono for code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Material Design Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet" rel="preload">
+
+
+    <!-- Keep the order, vue should be the first -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+
+    <!-- Vuetify -->
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3/dist/vuetify.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@3/dist/vuetify.min.css" rel="stylesheet">
+
+    <!-- Vue i18n -->
+    <script src="https://cdn.jsdelivr.net/npm/vue-i18n/dist/vue-i18n.global.prod.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon/dist/iconify-icon.min.js"></script>
+
+    <!-- Pinia -->
+    <script src="https://cdn.jsdelivr.net/npm/vue-demi/lib/index.iife.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pinia/dist/pinia.iife.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pinia-plugin-persist/dist/pinia-persist.umd.min.js"></script>
+
+    <!-- MD Editor Preview (Pinned to stable v4 with self-contained preview CSS - eliminates all.css 404) -->
+    <link href="https://cdn.jsdelivr.net/npm/md-editor-v3@4.21.3/lib/preview.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/md-editor-v3@4.21.3/lib/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/md-editor-v3@4.21.3/lib/umd/index.js"></script>
+
+    <!-- Lottie -->
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web/build/player/lottie.min.js"></script>
+    <!-- Docx mammoth -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.js"></script>
+
+    <!-- Vue Draggable -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue3-draggable-next/dist/vuedraggable.umd.min.js"></script>
+
+    <style>
+        :root {
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.28);
+            --secondary: #a855f7;
+            --accent: #38bdf8;
+            --ease-bounce: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        [v-cloak] {
+            display: none !important;
+        }
+
+        /* Initial Preloader */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #090d16;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-right-color: #a855f7;
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+        }
+
+        .loading-title {
+            margin-top: 1.5rem;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modern Sleek Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 999px;
+            transition: background 0.2s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.55);
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .brand-text {
+            font-family: var(--font-heading);
+        }
+
+        /* Gradient Text Utility */
+        .text-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-purple {
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-header {
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .theme-dark .glass-header {
+            background: rgba(9, 13, 22, 0.82) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .theme-light .glass-header {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+        }
+
+        /* App Layout & Chat Container */
+        .app-root {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-bot {
+            flex: 1;
+            max-width: 940px;
+            width: 100%;
+            margin: 0 auto;
+            padding-top: 1rem;
+            padding-bottom: 170px;
+            position: relative;
+        }
+
+        .fill-area {
+            height: 30px;
+        }
+
+        /* Hero / Empty State Section */
+        .hero-section {
+            min-height: calc(85vh - 70px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 1.5rem 1rem 160px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero-orb {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.12) 40%, transparent 70%);
+            filter: blur(55px);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: pulseGlow 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                transform: translate(-50%, -50%) scale(0.9);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.18);
+                opacity: 0.95;
+            }
+        }
+
+        /* Hero Developer Image Showcase */
+        .hero-image-wrapper {
+            position: relative;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .hero-image-frame {
+            position: relative;
+            width: 230px;
+            height: 230px;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 45px -12px rgba(99, 102, 241, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.15);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+
+        .hero-image-frame:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 26px 50px -12px rgba(99, 102, 241, 0.6), 0 0 0 2px rgba(129, 140, 248, 0.5);
+        }
+
+        .hero-developer-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-status-badge {
+            position: absolute;
+            bottom: -12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 16px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            letter-spacing: 0.06em;
+            color: #818cf8;
+            font-size: 0.76rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+
+        .status-pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulseStatus 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseStatus {
+
+            0%,
+            100% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.35);
+                opacity: 1;
+            }
+        }
+
+        .starter-card {
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 18px !important;
+            padding: 1.15rem 1.25rem !important;
+            text-align: left;
+            transition: all 0.25s var(--ease-bounce) !important;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .theme-dark .starter-card {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .theme-dark .starter-card:hover {
+            background: rgba(99, 102, 241, 0.08) !important;
+            border-color: rgba(99, 102, 241, 0.45) !important;
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px -10px rgba(99, 102, 241, 0.3);
+        }
+
+        .theme-light .starter-card {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-color: rgba(0, 0, 0, 0.07) !important;
+            box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.04);
+        }
+
+        .theme-light .starter-card:hover {
+            background: #ffffff !important;
+            border-color: rgba(99, 102, 241, 0.5) !important;
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px -10px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Chat Message Styling */
+        .chat-message-row {
+            padding: 1rem 0.5rem;
+            transition: background 0.2s;
+            border-radius: 16px;
+            margin-bottom: 0.75rem;
+        }
+
+        .user-bubble-card {
+            border-radius: 20px 20px 6px 20px !important;
+            border: 1px solid rgba(99, 102, 241, 0.25) !important;
+            box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.08) !important;
+            overflow: hidden;
+        }
+
+        .theme-dark .user-bubble-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(168, 85, 247, 0.08)) !important;
+        }
+
+        .theme-light .user-bubble-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.09), rgba(168, 85, 247, 0.04)) !important;
+        }
+
+        .assistant-bubble-card {
+            border-radius: 20px 20px 20px 6px !important;
+            overflow: hidden;
+        }
+
+        .theme-dark .assistant-bubble-card {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.07) !important;
+            box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        .theme-light .assistant-bubble-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        /* Reasoning / Thought Accordion */
+        .reasoning-box {
+            border: 1px dashed rgba(168, 85, 247, 0.35);
+            border-radius: 12px;
+            background: rgba(168, 85, 247, 0.05);
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0 1rem;
+            font-size: 0.88rem;
+        }
+
+        /* Pulsing Typing Indicator */
+        .typing-pulse {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 14px;
+        }
+
+        .typing-pulse span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #6366f1;
+            display: inline-block;
+            animation: bounceDot 1.4s infinite ease-in-out both;
+        }
+
+        .typing-pulse span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-pulse span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounceDot {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0.4);
+                opacity: 0.4;
+            }
+
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Floating Input Dock */
+        .input-dock-wrap {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 880px;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .input-dock {
+            border-radius: 24px !important;
+            padding: 8px 12px 6px 14px;
+            transition: all 0.3s var(--ease-bounce);
+        }
+
+        .theme-dark .input-dock {
+            background: rgba(15, 23, 42, 0.88) !important;
+            backdrop-filter: blur(24px) saturate(190%);
+            -webkit-backdrop-filter: blur(24px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(99, 102, 241, 0.15) !important;
+        }
+
+        .theme-dark .input-dock:focus-within {
+            border-color: rgba(99, 102, 241, 0.5) !important;
+            box-shadow: 0 20px 45px -10px rgba(99, 102, 241, 0.35), 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
+        }
+
+        .theme-light .input-dock {
+            background: rgba(255, 255, 255, 0.92) !important;
+            backdrop-filter: blur(24px) saturate(190%);
+            -webkit-backdrop-filter: blur(24px) saturate(190%);
+            border: 1px solid rgba(0, 0, 0, 0.09) !important;
+            box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.12), 0 0 1px 1px rgba(99, 102, 241, 0.1) !important;
+        }
+
+        .theme-light .input-dock:focus-within {
+            border-color: rgba(99, 102, 241, 0.5) !important;
+            box-shadow: 0 16px 40px -10px rgba(99, 102, 241, 0.2), 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+        }
+
+        .input-dock-footer {
+            text-align: center;
+            font-size: 0.73rem;
+            margin-top: 6px;
+            opacity: 0.65;
+            letter-spacing: 0.02em;
+        }
+
+        /* Attached image thumbnail */
+        .image-preview-thumb {
+            position: relative;
+            display: inline-block;
+            margin: 4px 6px;
+        }
+
+        .image-preview-thumb img {
+            height: 48px;
+            width: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            object-fit: cover;
+        }
+
+        .image-remove-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: #ffffff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 11px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Floating Controls & Tools Button */
+        .floating-action-pill {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            z-index: 99;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s var(--ease-bounce);
+        }
+
+        .floating-action-pill:hover {
+            transform: scale(1.05);
+        }
+
+        /* Dialogs */
+        .dialog-card {
+            width: 960px;
+            max-width: 95vw;
+            border-radius: 20px !important;
+            overflow: hidden;
+        }
+
+        .theme-dark .dialog-card .v-card {
+            background: #111827 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .theme-light .dialog-card .v-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        }
+
+        /* Draggable agent board */
+        .ghost {
+            opacity: 0.45;
+            background: rgba(99, 102, 241, 0.15) !important;
+        }
+
+        .list-draggable {
+            min-height: 250px;
+        }
+
+        /* Markdown Editor Overrides */
+        .md-editor-preview {
+            font-family: var(--font-sans) !important;
+            font-size: 0.96rem !important;
+            line-height: 1.68 !important;
+        }
+
+        .md-editor-preview pre {
+            border-radius: 12px !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .md-editor-preview code {
+            font-family: var(--font-mono) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Initial Loading Screen -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-title">PKJ AI 3D</div>
+    </div>
+
+    <script>
+        function hideLoadingScreen() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.style.opacity = '0';
+                loading.style.pointerEvents = 'none';
+                setTimeout(() => { loading.style.display = 'none'; }, 300);
+            }
+        }
+        window.addEventListener('load', hideLoadingScreen);
+        document.addEventListener('DOMContentLoaded', hideLoadingScreen);
+        setTimeout(hideLoadingScreen, 1200);
+    </script>
+
+    <div id="app" v-cloak>
+        <v-app :theme="isDark ? 'dark' : 'light'" :class="isDark ? 'theme-dark' : 'theme-light'">
+
+            <!-- Top Glassmorphic Navigation Bar -->
+            <v-app-bar flat border="b" class="glass-header px-2 px-sm-4" density="comfortable">
+                <div class="d-flex align-center">
+                    <v-avatar size="34" class="mr-2 mr-sm-3" color="primary">
+                        <v-icon icon="mdi-laptop-account" color="white" size="20"></v-icon>
+                    </v-avatar>
+                    <div>
+                        <div class="d-flex align-center">
+                            <span class="font-weight-bold brand-text text-subtitle-1 mr-2 text-gradient">PKJ AI</span>
+                            <v-chip size="x-small" color="primary" variant="flat"
+                                class="font-weight-bold d-none d-sm-inline-flex">3D</v-chip>
+                        </div>
+                    </div>
+                </div>
+
+                <v-spacer></v-spacer>
+
+                <!-- Active Model Pill (Click to open settings) -->
+                <v-chip variant="tonal" color="primary" class="mx-1 d-none d-md-flex font-weight-medium"
+                    @click="settingStore.initDialog" prepend-icon="mdi-laptop" style="cursor: pointer;">
+                    <span class="text-truncate" style="max-width: 220px;">{{ chatbotStore.model || 'Select Model' }}</span>
+                    <v-icon end size="14">mdi-chevron-down</v-icon>
+                </v-chip>
+
+                <!-- Free AI Active indicator -->
+                <v-chip v-if="chatbotStore.url.includes('pollinations.ai')"
+                    variant="flat" color="teal-darken-1" size="small" class="mx-1 font-weight-bold"
+                    prepend-icon="mdi-gift-outline" @click="settingStore.initDialog" style="cursor: pointer;">
+                    Free AI Active
+                </v-chip>
+
+                <!-- Set API Key Alert Pill if missing key on remote host -->
+                <v-chip v-else-if="!chatbotStore.apiKey && !chatbotStore.url.includes('127.0.0.1') && !chatbotStore.url.includes('localhost')"
+                    variant="flat" color="warning" size="small" class="mx-1 font-weight-bold"
+                    prepend-icon="mdi-gift-outline" @click="enableFreeModel" style="cursor: pointer;">
+                    Switch to Free AI (No Key)
+                </v-chip>
+
+                <!-- New Chat Quick Action -->
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-plus"
+                    @click="chatbotStore.newConversation"
+                    class="mx-1 text-none font-weight-medium d-none d-sm-inline-flex"
+                    v-tooltip:bottom="'Start New Chat'">
+                    New Chat
+                </v-btn>
+
+                <!-- Portfolio Link -->
+                <v-btn variant="text" size="small" href="https://prashay.github.io/prashantj/projects.html"
+                    target="_blank" prepend-icon="mdi-open-in-new"
+                    class="d-none d-sm-inline-flex text-none text-caption">
+                    Projects
+                </v-btn>
+
+                <!-- New Conversation Button -->
+                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-plus" @click="messageStore.init()"
+                    class="mx-1 text-none font-weight-medium">
+                    New Chat
+                </v-btn>
+
+                <!-- History Button -->
+                <v-btn icon size="small" @click="settingStore.configHistory = true" class="mx-1"
+                    v-tooltip:bottom="'Conversation History'">
+                    <v-badge :content="historyStore.conversation.length" color="primary"
+                        :model-value="historyStore.conversation.length > 0">
+                        <v-icon size="20">mdi-history</v-icon>
+                    </v-badge>
+                </v-btn>
+
+                <!-- Agent & Prompts Kanban -->
+                <v-btn icon size="small" @click="settingStore.agentDialog = true" class="mx-1"
+                    v-tooltip:bottom="'Prompts & Agent Board'">
+                    <v-icon size="20">mdi-view-dashboard-outline</v-icon>
+                </v-btn>
+
+                <!-- Settings Button -->
+                <v-btn icon size="small" @click="settingStore.initDialog" class="mx-1"
+                    v-tooltip:bottom="'Settings & Models'">
+                    <v-icon size="20">mdi-cog-outline</v-icon>
+                </v-btn>
+
+                <!-- Theme Toggle Button -->
+                <v-btn icon size="small" @click="toggleTheme" class="mx-1" :color="isDark ? 'amber-darken-1' : 'indigo'"
+                    v-tooltip:bottom="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+                    <v-icon size="20">{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+                </v-btn>
+            </v-app-bar>
+
+            <!-- Main Content Area -->
+            <v-main class="app-root">
+
+                <!-- Welcome Hero Screen (Shown when conversation is empty) -->
+                <div v-show="messageStore.conversation.length === 0" class="hero-section">
+                    <div class="hero-orb"></div>
+
+                    <!-- Modern Hero Developer Showcase Image -->
+                    <div class="hero-image-wrapper">
+                        <div class="hero-image-frame">
+                            <img src="img/developer.jpg" alt="PKJ AI Developer Assistant" class="hero-developer-img" />
+                        </div>
+                        <div class="hero-status-badge">
+                            <span class="status-pulse-dot"></span>
+                            <span class="font-weight-bold">PKJ AI • READY TO ASSIST</span>
+                        </div>
+                    </div>
+
+                    <h1 class="text-h4 text-sm-h3 font-weight-bold mb-2">
+                        Welcome to <span class="text-gradient">PKJ AI</span>
+                    </h1>
+
+                    <p class="text-subtitle-1 text-medium-emphasis mb-6" style="max-width: 580px;">
+                        Next-generation intelligent assistant for code generation, complex reasoning, multimodal vision, and
+                        extensible MCP tool orchestration.
+                    </p>
+
+                    <!-- Feature Tags -->
+                    <div class="d-flex flex-wrap justify-center ga-2 mb-8" style="max-width: 600px;">
+                        <v-chip size="small" variant="tonal" color="primary" prepend-icon="mdi-code-braces">
+                            Code Intelligence
+                        </v-chip>
+                        <v-chip size="small" variant="tonal" color="secondary" prepend-icon="mdi-lightning-bolt">
+                            Streaming Inference
+                        </v-chip>
+                        <v-chip size="small" variant="tonal" color="accent" prepend-icon="mdi-tools">
+                            MCP Tool Execution
+                        </v-chip>
+                        <v-chip size="small" variant="tonal" color="info" prepend-icon="mdi-code-braces">
+                            Markdown & Code Preview
+                        </v-chip>
+                    </div>
+
+                    <!-- Interactive Starter Prompts Grid -->
+                    <div style="max-width: 820px; width: 100%;">
+                        <div
+                            class="text-caption font-weight-bold text-uppercase tracking-wider text-medium-emphasis mb-3">
+                            Try asking something to get started
+                        </div>
+                        <v-row dense>
+                            <v-col cols="12" sm="6" v-for="(card, i) in starterPrompts" :key="i">
+                                <v-card class="starter-card" @click="useStarterPrompt(card.prompt)" flat>
+                                    <div class="d-flex align-start">
+                                        <v-avatar size="36" :color="card.color" variant="tonal" class="mr-3">
+                                            <v-icon :icon="card.icon" size="20"></v-icon>
+                                        </v-avatar>
+                                        <div class="flex-grow-1">
+                                            <div class="font-weight-bold text-subtitle-2 mb-1">{{ card.title }}</div>
+                                            <div class="text-caption text-medium-emphasis">{{ card.desc }}</div>
+                                        </div>
+                                        <v-icon icon="mdi-arrow-top-right" size="18"
+                                            class="text-disabled ml-2"></v-icon>
+                                    </div>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+                </div>
+
+                <!-- Chat Conversation Stream -->
+                <v-container v-show="messageStore.conversation.length > 0" class="chat-bot">
+                    <tuui-chat-box :messages="messageStore.conversation" :size="settingStore.avatarSize"
+                        :language="languageStore.getLocale" :is-dark="isDark"
+                        :generating="messageStore.generating"></tuui-chat-box>
+                    <div class="fill-area"></div>
+                </v-container>
+
+                <!-- Floating Glassmorphic Input Dock -->
+                <div class="input-dock-wrap">
+                    <!-- Image Preview Thumbnail if selected -->
+                    <div v-if="messageStore.base64" class="image-preview-thumb">
+                        <img :src="messageStore.base64" alt="Uploaded Image Preview">
+                        <div class="image-remove-btn" @click="messageStore.images = []; messageStore.base64 = ''">✕
+                        </div>
+                    </div>
+
+                    <v-sheet elevation="0" class="input-dock">
+                        <div class="d-flex align-end">
+
+                            <!-- Quick Settings Menu -->
+                            <v-menu location="top start" offset="10">
+                                <template v-slot:activator="{ props: menuProps }">
+                                    <v-btn v-bind="menuProps" size="small" icon="mdi-tune-vertical" variant="text"
+                                        class="mr-1 mb-2" title="Quick Settings"></v-btn>
+                                </template>
+                                <v-list density="compact" elevation="6" rounded="lg" class="pa-1">
+                                    <v-list-item @click="settingStore.initDialog" prepend-icon="mdi-api"
+                                        title="Model & API Settings"></v-list-item>
+                                    <v-list-item @click="settingStore.agentDialog = true"
+                                        prepend-icon="mdi-account-supervisor" title="Agents & Prompts"></v-list-item>
+                                    <v-list-item v-if="mcpStore.getServers" @click="resourceStore.resourceDialog = true"
+                                        prepend-icon="mdi-database" title="MCP Resources"></v-list-item>
+                                    <v-list-item @click="settingStore.configHistory = true"
+                                        prepend-icon="mdi-list-box" title="Conversation History"></v-list-item>
+                                </v-list>
+                            </v-menu>
+
+                            <!-- File/Image Attachment -->
+                            <v-file-input v-model="messageStore.images" accept="image/*" hide-input prepend-icon=""
+                                prepend-inner-icon="" class="d-none" id="file-uploader"></v-file-input>
+                            <v-btn icon="mdi-paperclip" size="small" variant="text" class="mr-1 mb-2"
+                                onclick="document.getElementById('file-uploader').click()"
+                                v-tooltip:top="'Attach Image for Vision Analysis'">
+                            </v-btn>
+
+                            <!-- Prompt Templates Button -->
+                            <v-btn v-if="mcpStore.getServers" icon="mdi-text-box-search-outline" size="small"
+                                variant="text" class="mr-1 mb-2" @click="promptStore.promptDialog = true"
+                                v-tooltip:top="'MCP Prompt Templates'">
+                            </v-btn>
+
+                            <!-- Auto-growing Textarea Input -->
+                            <v-textarea class="flex-grow-1 mx-1" variant="plain" density="compact" auto-grow rows="1"
+                                max-rows="8" hide-details v-model="messageStore.userMessage"
+                                placeholder="Ask anything or request code... (Shift + Enter for new line)"
+                                @keydown="messageStore.handleKeydown"
+                                style="font-size: 0.95rem; line-height: 1.5;"></v-textarea>
+
+                            <!-- Send / Stop Button -->
+                            <div class="mb-1 ml-1">
+                                <v-btn v-if="messageStore.generating" size="small" color="error" variant="flat"
+                                    @click="messageStore.stop" icon="mdi-stop" v-tooltip:top="'Stop generating'">
+                                </v-btn>
+                                <v-btn v-else-if="messageStore.userMessage.trim()" size="small" color="primary"
+                                    variant="flat" @click="messageStore.sendMessage" icon="mdi-arrow-up"
+                                    v-tooltip:top="'Send message (Enter)'">
+                                </v-btn>
+                                <v-btn v-else-if="messageStore.conversation.length > 0" size="small" variant="text"
+                                    @click="messageStore.resendMessage" icon="mdi-autorenew"
+                                    v-tooltip:top="'Regenerate response'">
+                                </v-btn>
+                                <v-btn v-else size="small" variant="text" disabled icon="mdi-arrow-up"
+                                    class="text-disabled">
+                                </v-btn>
+                            </div>
+
+                        </div>
+                    </v-sheet>
+                    <div class="input-dock-footer text-medium-emphasis">
+                        PKJ AI Assistant • Press <kbd class="px-1 py-0.5 rounded border">Enter</kbd> to send, <kbd
+                            class="px-1 py-0.5 rounded border">Shift + Enter</kbd> for new line
+                    </div>
+                </div>
+
+            </v-main>
+
+            <!-- Snackbar Notification -->
+            <v-snackbar v-model="snackbarStore.isShow" timeout="3500" :color="snackbarStore.type" location="top"
+                elevation="10" rounded="pill">
+                <div class="d-flex align-center">
+                    <v-icon class="mr-2">{{ snackbarStore.getIcon() }}</v-icon>
+                    <span class="font-weight-medium">{{ $t(snackbarStore.message) }}</span>
+                </div>
+                <template v-slot:actions>
+                    <v-btn icon size="small" variant="text" @click="snackbarStore.isShow = false">
+                        <v-icon size="16">mdi-close</v-icon>
+                    </v-btn>
+                </template>
+            </v-snackbar>
+
+            <!-- History Dialog -->
+            <v-dialog v-model="settingStore.configHistory" class="dialog-card">
+                <v-card flat>
+                    <v-card-title class="d-flex align-center px-4 py-3 border-b">
+                        <v-icon icon="mdi-history" color="primary" class="mr-2"></v-icon>
+                        <span class="font-weight-bold">{{ $t('$vuetify.dataIterator.q.title') }}</span>
+                        <v-spacer></v-spacer>
+                        <v-btn size="small" variant="tonal" color="primary" prepend-icon="mdi-download"
+                            class="mr-2 text-none" @click="historyStore.downloadHistory">Export JSON</v-btn>
+                        <v-btn size="small" variant="tonal" color="error" prepend-icon="mdi-delete-sweep"
+                            class="mr-2 text-none" @click="historyStore.resetState">Clear All</v-btn>
+                        <v-btn icon="mdi-close" size="small" variant="text"
+                            @click="settingStore.configHistory = false"></v-btn>
+                    </v-card-title>
+
+                    <div class="px-4 pt-3 pb-1">
+                        <v-text-field v-model="historySearch" density="compact" variant="outlined"
+                            placeholder="Search conversations..." prepend-inner-icon="mdi-magnify" hide-details
+                            clearable></v-text-field>
+                    </div>
+
+                    <v-card-text style="max-height: 55vh; overflow-y: auto;" class="pa-4">
+                        <div v-if="filteredHistory.length === 0" class="text-center py-8 text-medium-emphasis">
+                            <v-icon size="48" class="mb-2 text-disabled">mdi-chat-question-outline</v-icon>
+                            <div>No conversations found</div>
+                        </div>
+
+                        <v-card v-for="(item, index) in filteredHistory" :key="item.id" variant="outlined"
+                            class="mb-3 rounded-lg">
+                            <v-card-item>
+                                <template v-slot:prepend>
+                                    <v-avatar :color="historyStore.getColor(index)" size="32"
+                                        class="mr-3 font-weight-bold" style="cursor: pointer;"
+                                        @click="historyStore.select(index)">
+                                        {{ item.history.length }}
+                                    </v-avatar>
+                                </template>
+                                <v-card-title class="text-subtitle-2 font-weight-bold" style="cursor: pointer;"
+                                    @click="historyStore.select(index)">
+                                    {{ item.history[0]?.content[1]?.text || item.history[0]?.content || "Untitled Conversation" }}
+                                </v-card-title>
+                                <v-card-subtitle class="text-caption text-truncate">
+                                    {{ item.history[item.history.length-1]?.content[1]?.text || item.history[item.history.length-1]?.content || "No preview" }}
+                                </v-card-subtitle>
+                                <template v-slot:append>
+                                    <v-btn size="small" icon="mdi-download" variant="text" color="primary"
+                                        @click="historyStore.downloadById(index)" v-tooltip:top="'Download'"></v-btn>
+                                    <v-btn size="small" icon="mdi-delete-outline" variant="text" color="error"
+                                        @click="historyStore.deleteById(index)" v-tooltip:top="'Delete'"></v-btn>
+                                </template>
+                            </v-card-item>
+                        </v-card>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+
+            <!-- Interface & Model Settings Dialog -->
+            <v-dialog v-model="settingStore.configDialog" class="dialog-card">
+                <v-card flat>
+                    <v-card-title class="d-flex align-center px-4 py-3 border-b">
+                        <v-icon icon="mdi-tune-vertical" color="primary" class="mr-2"></v-icon>
+                        <span class="font-weight-bold">{{ $t('$vuetify.dataIterator.i.title') }}</span>
+                        <v-spacer></v-spacer>
+                        <v-btn icon="mdi-refresh" size="small" variant="text" color="error"
+                            @click="chatbotStore.resetState" v-tooltip:top="'Reset to Defaults'"></v-btn>
+                        <v-btn icon="mdi-close" size="small" variant="text"
+                            @click="settingStore.configDialog = false"></v-btn>
+                    </v-card-title>
+
+                    <v-tabs v-model="activeConfigTab" color="primary" density="compact" class="px-4 border-b">
+                        <v-tab value="endpoint" class="text-none">Endpoint & Model</v-tab>
+                        <v-tab value="params" class="text-none">Parameters</v-tab>
+                        <v-tab value="config" class="text-none">Import / Export</v-tab>
+                    </v-tabs>
+
+                    <v-card-text class="pa-4" style="max-height: 60vh; overflow-y: auto;">
+                        <v-tabs-window v-model="activeConfigTab">
+
+                            <!-- Tab 1: Endpoint & Model -->
+                            <v-tabs-window-item value="endpoint">
+                                <!-- Free AI Model Quick Activation Banner -->
+                                <v-card variant="tonal" color="teal" class="mb-3 pa-3 rounded-lg border">
+                                    <div class="d-flex align-center flex-wrap ga-2">
+                                        <v-icon icon="mdi-gift-outline" size="24" color="teal"></v-icon>
+                                        <div class="flex-grow-1">
+                                            <div class="font-weight-bold text-subtitle-2 text-teal">Free AI Model (No API Key Required)</div>
+                                            <div class="text-caption text-medium-emphasis">Free keyless access powered by Pollinations (GPT-4o mini, DeepSeek, LLaMA).</div>
+                                        </div>
+                                        <v-btn color="teal" variant="flat" size="small" class="text-none font-weight-bold" @click="enableFreeModel">
+                                            Use Free AI
+                                        </v-btn>
+                                    </div>
+                                </v-card>
+
+                                <v-alert v-if="!chatbotStore.apiKey && !chatbotStore.url.includes('127.0.0.1') && !chatbotStore.url.includes('localhost') && !chatbotStore.url.includes('pollinations.ai')"
+                                    type="info" variant="tonal" density="compact" class="mb-3 text-caption"
+                                    icon="mdi-information">
+                                    An API key is required for this provider. Enter your key below, switch to <strong>Free AI</strong> above, or select <code>http://127.0.0.1:11434/v1</code> for local Ollama.
+                                </v-alert>
+
+                                <v-text-field density="compact" color="primary" variant="outlined"
+                                    :append-inner-icon="settingStore.apiKeyShow ? 'mdi-eye-off' : 'mdi-eye'"
+                                    :type="settingStore.apiKeyShow ? 'text' : 'password'" v-model="chatbotStore.apiKey"
+                                    class="mb-3" :label="$t('$vuetify.dataIterator.i.apikey')"
+                                    prepend-inner-icon="mdi-key-outline" clearable
+                                    placeholder="Enter your API Key (e.g. sk-...)"
+                                    @click:append-inner="settingStore.apiKeyShow = !settingStore.apiKeyShow"></v-text-field>
+
+                                <v-combobox density="compact" class="mb-3" :label="$t('$vuetify.dataIterator.i.url')"
+                                    :items="defaultChoiceStore.url" v-model="chatbotStore.url" variant="outlined"
+                                    prepend-inner-icon="mdi-web"></v-combobox>
+
+                                <v-combobox density="compact" class="mb-3" :label="$t('$vuetify.dataIterator.i.path')"
+                                    :items="defaultChoiceStore.path" v-model="chatbotStore.path" variant="outlined"
+                                    prepend-inner-icon="mdi-routes"></v-combobox>
+
+                                <v-combobox density="compact" class="mb-3" :label="$t('$vuetify.dataIterator.i.model')"
+                                    :items="defaultChoiceStore.model" v-model="chatbotStore.model" variant="outlined"
+                                    prepend-inner-icon="mdi-laptop"></v-combobox>
+
+                                <div class="d-flex ga-4">
+                                    <v-switch v-model="chatbotStore.stream"
+                                        :label="$t('$vuetify.dataIterator.i.stream')" color="primary" hide-details
+                                        density="compact"></v-switch>
+                                    <v-switch v-model="chatbotStore.mcp" :label="$t('$vuetify.dataIterator.i.mcp')"
+                                        color="primary" hide-details density="compact"></v-switch>
+                                </div>
+                            </v-tabs-window-item>
+
+                            <!-- Tab 2: Parameters -->
+                            <v-tabs-window-item value="params">
+                                <v-row dense>
+                                    <v-col cols="12" sm="6">
+                                        <v-combobox density="compact" :label="$t('$vuetify.dataIterator.i.temperature')"
+                                            :items="defaultChoiceStore.temperature" type="number"
+                                            v-model="chatbotStore.temperature" variant="outlined"
+                                            hint="0.0 = Precise, 1.0 = Creative" persistent-hint></v-combobox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-combobox density="compact" :label="$t('$vuetify.dataIterator.i.topP')"
+                                            v-model="chatbotStore.top_p" type="number" variant="outlined"
+                                            hint="Nucleus sampling threshold" persistent-hint></v-combobox>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row dense class="mt-2">
+                                    <v-col cols="12" sm="6">
+                                        <v-combobox density="compact"
+                                            :label="$t('$vuetify.dataIterator.i.maxTokensPrefix')"
+                                            :items="defaultChoiceStore.max_tokens_type"
+                                            v-model="chatbotStore.max_tokens_type" variant="outlined"></v-combobox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field density="compact" label="Max Tokens Value"
+                                            v-model="chatbotStore.max_tokens_value" type="number" variant="outlined"
+                                            placeholder="e.g. 4096"></v-text-field>
+                                    </v-col>
+                                </v-row>
+
+                                <v-row dense class="mt-2">
+                                    <v-col cols="12" sm="6">
+                                        <v-combobox density="compact" :label="$t('$vuetify.dataIterator.i.authPrefix')"
+                                            :items="defaultChoiceStore.authPrefix" v-model="chatbotStore.authPrefix"
+                                            variant="outlined"></v-combobox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-combobox density="compact" :label="$t('$vuetify.dataIterator.i.method')"
+                                            v-model="chatbotStore.method" variant="outlined"></v-combobox>
+                                    </v-col>
+                                </v-row>
+                            </v-tabs-window-item>
+
+                            <!-- Tab 3: Config Import/Export -->
+                            <v-tabs-window-item value="config">
+                                <v-file-input prepend-icon="" prepend-inner-icon="mdi-upload" variant="outlined"
+                                    v-model="configFile" :label="$t('$vuetify.dataIterator.i.configFile')"
+                                    accept="application/json" class="mb-3" density="compact" single-line></v-file-input>
+                                <p class="text-caption text-medium-emphasis">
+                                    Upload a JSON configuration file to restore your customized model endpoints, API
+                                    keys, and parameter presets.
+                                </p>
+                            </v-tabs-window-item>
+
+                        </v-tabs-window>
+                    </v-card-text>
+
+                    <v-card-actions class="px-4 py-3 border-t">
+                        <v-spacer></v-spacer>
+                        <v-btn variant="flat" color="primary" class="text-none px-6"
+                            @click="settingStore.configDialog = false">Save & Close</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <!-- Prompts Template Dialog -->
+            <v-dialog v-model="promptStore.promptDialog" class="dialog-card">
+                <v-card flat>
+                    <v-card-title class="d-flex align-center px-4 py-3 border-b">
+                        <v-icon icon="mdi-text-box-search-outline" color="primary" class="mr-2"></v-icon>
+                        <span class="font-weight-bold">{{ $t('$vuetify.dataIterator.p.title') }}</span>
+                        <v-spacer></v-spacer>
+                        <v-btn icon="mdi-close" size="small" variant="text"
+                            @click="promptStore.promptDialog = false"></v-btn>
+                    </v-card-title>
+                    <v-card-text class="pa-4">
+                        <v-data-iterator :items="promptStore.promptList" :search="promptStore.search"
+                            items-per-page="-1" @update:options="promptStore.loadPrompts"
+                            :loading="promptStore.loading">
+                            <template v-slot:header>
+                                <v-text-field v-model="promptStore.search" density="compact"
+                                    placeholder="Search prompts..." prepend-inner-icon="mdi-magnify" variant="outlined"
+                                    clearable hide-details class="mb-4"></v-text-field>
+                            </template>
+                            <template v-slot:default="{ items }">
+                                <v-row dense>
+                                    <v-col v-for="item in items" :key="item.raw.title +':'+ item.raw.name" cols="12"
+                                        sm="6">
+                                        <v-card variant="outlined" class="pa-3 rounded-lg h-100">
+                                            <div class="d-flex align-center mb-1">
+                                                <span class="font-weight-bold text-subtitle-2 flex-grow-1">{{
+                                                    item.raw.title }}</span>
+                                                <v-btn size="small" variant="tonal" color="primary" class="text-none"
+                                                    @click="promptStore.select(item.raw)">Select</v-btn>
+                                            </div>
+                                            <div class="text-caption text-medium-emphasis mb-2">{{ item.raw.name }}
+                                            </div>
+                                            <div class="text-body-2">{{ item.raw.description }}</div>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                            </template>
+                        </v-data-iterator>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+
+            <!-- Prompt Sheet Modal -->
+            <v-dialog v-model="promptStore.promptSheet" class="dialog-card">
+                <v-card flat>
+                    <v-card-title class="px-4 py-3 border-b">
+                        {{ $t('$vuetify.dataIterator.p.sheet') }} — {{ promptStore.promptSelect.title }}
+                    </v-card-title>
+                    <v-card-text class="pa-4">
+                        <div class="mb-3 text-body-2">{{ promptStore.promptSelect.description }}</div>
+                        <div v-if="promptStore.promptSelect.arguments">
+                            <v-textarea v-for="argument in promptStore.promptSelect.arguments" :key="argument.name"
+                                color="primary" variant="outlined" v-model="argument.content" :label="argument.name"
+                                rows="1" auto-grow class="mb-2"></v-textarea>
+                        </div>
+                    </v-card-text>
+                    <v-card-actions class="px-4 py-3 border-t">
+                        <v-spacer></v-spacer>
+                        <v-btn variant="outlined" @click="promptStore.promptSheet = false">Cancel</v-btn>
+                        <v-btn variant="flat" color="primary"
+                            @click="messageStore.applyPrompt(promptStore.fetchSelect())">Apply Prompt</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <!-- MCP Resources Dialog -->
+            <v-dialog v-model="resourceStore.resourceDialog" class="dialog-card" scrollable>
+                <v-card flat>
+                    <v-card-title class="d-flex align-center px-4 py-3 border-b">
+                        <v-icon icon="mdi-database" color="primary" class="mr-2"></v-icon>
+                        <span class="font-weight-bold">{{ $t('$vuetify.dataIterator.r.title') }}</span>
+                        <v-spacer></v-spacer>
+                        <v-btn icon="mdi-close" size="small" variant="text"
+                            @click="resourceStore.resourceDialog = false"></v-btn>
+                    </v-card-title>
+                    <v-tabs :items="mcpStore.listServerResources()" v-model="resourceStore.tab" color="primary"
+                        class="border-b">
+                        <template v-slot:tab="{ item }">
+                            <v-tab :text="item.name" :value="item.name" class="text-none"></v-tab>
+                        </template>
+                    </v-tabs>
+                    <v-card-text class="pa-4">
+                        <v-tabs-window v-model="resourceStore.tab">
+                            <v-tabs-window-item v-for="item in mcpStore.listServerResources()" :key="item.name"
+                                :value="item.name">
+                                <v-data-iterator :items="resourceStore.resourceTemplatesList" items-per-page="-1"
+                                    @update:options="resourceStore.loadTemplates(item.templatesList)"
+                                    :loading="resourceStore.loadingTemplates">
+                                    <template v-slot:default="{ items }">
+                                        <v-row dense class="mb-4">
+                                            <v-col v-for="tpl in items" :key="tpl.raw.uriTemplate +':'+ tpl.raw.name"
+                                                cols="12">
+                                                <v-card variant="outlined" class="pa-3 rounded-lg">
+                                                    <div class="font-weight-bold">{{ tpl.raw.name }}</div>
+                                                    <div class="text-caption text-medium-emphasis">{{
+                                                        tpl.raw.uriTemplate }}</div>
+                                                    <div class="text-body-2 mt-1">{{ tpl.raw.description }}</div>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </template>
+                                </v-data-iterator>
+                                <v-data-iterator :items="resourceStore.resourceList" items-per-page="-1"
+                                    @update:options="resourceStore.loadResources(item.list)"
+                                    :loading="resourceStore.loadingResources">
+                                    <template v-slot:default="{ items }">
+                                        <v-expansion-panels variant="accordion">
+                                            <v-expansion-panel v-for="res in items"
+                                                :key="res.raw.uri +':'+ res.raw.name"
+                                                :text="JSON.stringify(res.raw, null, 2)"
+                                                :title="res.raw.name +' - '+ res.raw.uri">
+                                            </v-expansion-panel>
+                                        </v-expansion-panels>
+                                    </template>
+                                </v-data-iterator>
+                            </v-tabs-window-item>
+                        </v-tabs-window>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+
+            <!-- Agent & Prompts Kanban Dialog -->
+            <v-dialog v-model="settingStore.agentDialog" class="dialog-card">
+                <v-card flat>
+                    <v-card-title class="d-flex align-center px-4 py-3 border-b">
+                        <v-icon icon="mdi-view-dashboard-outline" color="primary" class="mr-2"></v-icon>
+                        <span class="font-weight-bold">{{ $t('$vuetify.dataIterator.a.title') }}</span>
+                        <v-spacer></v-spacer>
+                        <v-btn color="error" size="small" variant="tonal" prepend-icon="mdi-refresh"
+                            @click="agentStore.initAgent()" class="text-none mr-2">Reset</v-btn>
+                        <v-btn icon="mdi-close" size="small" variant="text"
+                            @click="settingStore.agentDialog = false"></v-btn>
+                    </v-card-title>
+                    <v-container class="pa-4">
+                        <v-row>
+                            <v-col cols="12" md="6" v-for="column in agentStore.columns" :key="column.key">
+                                <v-sheet class="pa-3 rounded-lg border" color="surface-variant">
+                                    <div class="d-flex align-center mb-3">
+                                        <span class="font-weight-bold text-subtitle-2">{{ column.key }}</span>
+                                        <v-spacer></v-spacer>
+                                        <v-btn variant="tonal" size="x-small" icon="mdi-plus" color="primary"
+                                            @click="column.isAddVisible = !column.isAddVisible"></v-btn>
+                                    </div>
+
+                                    <!-- Add New Card Form -->
+                                    <v-card v-show="column.isAddVisible" class="pa-3 mb-3 rounded-lg">
+                                        <v-text-field color="primary" v-model="column.addTitle" label="Card Title"
+                                            variant="outlined" density="compact" hide-details autofocus
+                                            @keyup.enter="agentStore.addCard(column)"
+                                            @keyup.esc="column.isAddVisible = false"></v-text-field>
+                                        <div class="mt-2 d-flex ga-2">
+                                            <v-btn size="small" variant="text"
+                                                @click="column.isAddVisible = false">Cancel</v-btn>
+                                            <v-spacer></v-spacer>
+                                            <v-btn size="small" color="primary" variant="flat"
+                                                @click="agentStore.addCard(column)">Add</v-btn>
+                                        </div>
+                                    </v-card>
+
+                                    <!-- Draggable Cards -->
+                                    <vuedraggable v-model="column.cards" v-bind="agentStore.getDragOption"
+                                        class="list-draggable" @change="column.callback" item-key="id">
+                                        <template #item="{ element, index }">
+                                            <v-card @click="agentStore.editCard(element)" class="pa-3 mb-2 rounded-lg"
+                                                elevation="1" style="cursor: grab;">
+                                                <div class="d-flex align-start font-weight-bold">
+                                                    <span class="flex-grow-1 text-subtitle-2">{{ element.title }}</span>
+                                                    <v-btn size="x-small" variant="text" icon="mdi-delete-outline"
+                                                        color="error"
+                                                        @click.stop="agentStore.deleteCard(column, index)"></v-btn>
+                                                </div>
+                                                <div class="text-caption text-medium-emphasis mt-1">{{
+                                                    element.description }}</div>
+                                            </v-card>
+                                        </template>
+                                    </vuedraggable>
+                                </v-sheet>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card>
+            </v-dialog>
+
+            <!-- Edit Card Dialog -->
+            <v-dialog v-model="agentStore.editDialog" class="dialog-card">
+                <v-card flat v-if="agentStore.card">
+                    <v-card-title class="d-flex align-center px-4 py-3 border-b">
+                        <span class="font-weight-bold">Edit Agent Card</span>
+                        <v-spacer></v-spacer>
+                        <v-btn icon="mdi-close" size="small" variant="text"
+                            @click="agentStore.editDialog = false"></v-btn>
+                    </v-card-title>
+                    <v-card-text class="pa-4">
+                        <v-text-field v-model="agentStore.card.title" label="Title" variant="outlined" density="compact"
+                            class="mb-3" autofocus></v-text-field>
+                        <v-textarea v-model="agentStore.card.description" label="Instructions / Description"
+                            variant="outlined" rows="4" class="mb-3"></v-textarea>
+                        <v-file-input v-model="agentStore.card.refFile" label="Reference Document (.docx, .md, .txt)"
+                            variant="outlined" density="compact" prepend-icon="" prepend-inner-icon="mdi-upload"
+                            accept=".docx, .md, .txt"></v-file-input>
+                    </v-card-text>
+                    <v-card-actions class="px-4 py-3 border-t">
+                        <v-spacer></v-spacer>
+                        <v-btn variant="outlined" @click="agentStore.editDialog = false">Cancel</v-btn>
+                        <v-btn variant="flat" color="primary" @click="agentStore.saveCard()">Save</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <!-- Floating Toolbox Reset Button -->
+            <v-btn v-if="!settingStore.toolboxShow" class="floating-action-pill" color="primary" variant="flat"
+                icon="mdi-tools" size="large" @click="settingStore.toolboxShow = true"
+                v-tooltip:left="'Control Toolbox'"></v-btn>
+            <v-card v-else class="floating-action-pill pa-1 d-flex flex-column" elevation="10">
+                <v-btn icon="mdi-restore" size="small" variant="text" color="error" @click="resetALL()"
+                    v-tooltip:left="'Reset All Settings'"></v-btn>
+                <v-btn icon="mdi-close" size="small" variant="text" @click="settingStore.toolboxShow = false"
+                    v-tooltip:left="'Close'"></v-btn>
+            </v-card>
+
+        </v-app>
+    </div>
+
+    <!-- TuuiChatBox Template -->
+    <template id="tuui-chat-box-template">
+        <div v-for="group in groupMessages" :key="group.index" class="chat-message-row">
+
+            <!-- User Message Row -->
+            <div v-if="group.group === 'user'" class="d-flex align-start justify-end">
+                <div style="max-width: 85%;">
+                    <tuui-chat-card class="user-bubble-card" :index="group.index" :messages="messages"
+                        :show-modify="true">
+                        <template v-slot:default="{ showmodify }">
+                            <div class="pa-4">
+                                <div v-if="Array.isArray(group.message.content)">
+                                    <div v-for="(item, idx) in group.message.content" :key="idx">
+                                        <tuui-img-dialog v-if="item.type == 'image_url'"
+                                            :src="item.image_url.url"></tuui-img-dialog>
+                                        <v-textarea v-if="item.text" variant="plain" density="compact" auto-grow
+                                            rows="1" :readonly="!showmodify" v-model="item.text"
+                                            hide-details></v-textarea>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <v-textarea variant="plain" density="compact" auto-grow rows="1"
+                                        :readonly="!showmodify" v-model="group.message.content"
+                                        hide-details></v-textarea>
+                                </div>
+                            </div>
+                        </template>
+                    </tuui-chat-card>
+                </div>
+                <v-avatar size="32" color="primary" class="ml-3 mt-1 font-weight-bold">
+                    <v-icon icon="mdi-account" size="18" color="white"></v-icon>
+                </v-avatar>
+            </div>
+
+            <!-- Assistant Message Row -->
+            <div v-if="group.group === 'assistant'" class="d-flex align-start justify-start">
+                <v-avatar size="34" class="mr-3 mt-1" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+                    <v-icon icon="mdi-laptop-account" size="18" color="white"></v-icon>
+                </v-avatar>
+                <div style="max-width: 90%; flex: 1;">
+                    <tuui-chat-card class="assistant-bubble-card" :index="group.index" :messages="messages"
+                        :show-content="true">
+                        <template v-slot:default="{ showcontent }">
+                            <div class="pa-4">
+
+                                <!-- DeepSeek / Reasoning Content Accordion -->
+                                <div v-if="group.message.reasoning_content" class="reasoning-box">
+                                    <v-expansion-panels variant="accordion">
+                                        <v-expansion-panel elevation="0">
+                                            <v-expansion-panel-title class="pa-2 font-weight-medium text-caption"
+                                                style="min-height: 36px;">
+                                                <v-icon icon="mdi-brain" color="secondary" size="18"
+                                                    class="mr-2"></v-icon>
+                                                Thinking Process
+                                            </v-expansion-panel-title>
+                                            <v-expansion-panel-text class="pa-2 text-caption text-medium-emphasis"
+                                                style="font-family: var(--font-mono); white-space: pre-wrap;">
+                                                {{ group.message.reasoning_content }}
+                                            </v-expansion-panel-text>
+                                        </v-expansion-panel>
+                                    </v-expansion-panels>
+                                </div>
+
+                                <!-- Generating Typing Dots Indicator -->
+                                <div v-if="generating && !group.message.content" class="typing-pulse">
+                                    <span></span><span></span><span></span>
+                                </div>
+
+                                <!-- Raw Content view toggle -->
+                                <div v-if="showcontent">
+                                    <v-textarea variant="plain" density="compact" auto-grow hide-details rows="1"
+                                        readonly v-model="group.message.content"></v-textarea>
+                                </div>
+
+                                <!-- Markdown Preview Component -->
+                                <div v-else-if="group.message.content">
+                                    <md-preview :model-value="group.message.content"
+                                        :language="language == 'zhHans' ? 'zh-CN' : 'en-US'"
+                                        :theme="isDark ? 'dark' : 'light'" :code-foldable="true"
+                                        auto-fold-threshold="Infinity"></md-preview>
+                                </div>
+
+                            </div>
+                        </template>
+                    </tuui-chat-card>
+                </div>
+            </div>
+
+            <!-- Tool Execution Message Row -->
+            <div v-if="group.group === 'tool'" class="d-flex align-start justify-start">
+                <v-avatar size="34" color="brown-darken-1" class="mr-3 mt-1">
+                    <v-icon icon="mdi-hammer-wrench" size="18" color="white"></v-icon>
+                </v-avatar>
+                <div style="max-width: 90%; flex: 1;">
+                    <tuui-chat-card class="assistant-bubble-card" :messages="messages" :show-copy="false"
+                        :index="group.index" :range="group.messages.length">
+                        <v-tabs v-model="dialogs[group.tab]" :items="group.messages" density="compact">
+                            <template v-slot:tab="{ item }">
+                                <v-tab :text="item.index" :key="item.index" :value="item.index" class="text-none">
+                                    <v-icon v-if="item.role == 'tool'" icon="mdi-arrow-left-circle" color="primary"
+                                        class="mr-1"></v-icon>
+                                    <v-icon v-if="item.role == 'assistant'" icon="mdi-arrow-right-circle" color="teal"
+                                        class="mr-1"></v-icon>
+                                    Tool Call
+                                </v-tab>
+                            </template>
+                            <template v-slot:item="{ item }">
+                                <v-tabs-window-item :key="item.index" :value="item.index">
+                                    <v-card class="pa-3" variant="flat" v-if="item.role == 'tool'">
+                                        <div class="text-caption font-weight-bold text-medium-emphasis mb-1">
+                                            ID: {{ item.tool_call_id }}
+                                        </div>
+                                        <div class="text-body-2 font-mono" style="white-space: pre-wrap;">
+                                            {{ Array.isArray(item.content) ? item.content.map(c => c.text).join('\n') : item.content }}
+                                        </div>
+                                    </v-card>
+                                    <v-card class="pa-3" variant="flat" v-if="item.role == 'assistant'">
+                                        <div v-if="item.content" class="text-body-2 mb-2">{{ item.content }}</div>
+                                        <div v-for="call in item.tool_calls" :key="call.id"
+                                            class="pa-2 rounded border mb-2">
+                                            <div class="text-caption font-weight-bold text-primary">{{ call.function.name }}</div>
+                                            <div class="text-caption text-medium-emphasis font-mono">{{ call.function.arguments }}</div>
+                                        </div>
+                                    </v-card>
+                                </v-tabs-window-item>
+                            </template>
+                        </v-tabs>
+                    </tuui-chat-card>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+    <!-- TuuiImgDialog Template -->
+    <template id="tuui-img-dialog-template">
+        <v-dialog>
+            <template v-slot:activator="{ props: activatorProps }">
+                <v-img class="rounded-lg mb-2" contain position="left" max-width="240px" max-height="180px"
+                    v-bind="activatorProps" :src="src" style="cursor: zoom-in;"></v-img>
+            </template>
+            <template v-slot:default="{ isActive }">
+                <div class="d-flex align-center justify-center" @click="isActive.value = false"
+                    style="background: rgba(0,0,0,0.85); inset: 0;">
+                    <v-img contain max-width="90vw" max-height="90vh" :src="src"></v-img>
+                </div>
+            </template>
+        </v-dialog>
+    </template>
+
+    <!-- TuuiChatCard Template with Micro-Action Toolbar -->
+    <template id="tuui-chat-card-template">
+        <v-hover open-delay="50">
+            <template v-slot:default="{ isHovering, props }">
+                <v-card v-bind="props" flat class="position-relative">
+                    <slot :showcontent="showcontent" :showmodify="showmodify"></slot>
+
+                    <!-- Message Actions Toolbar -->
+                    <div class="d-flex align-center px-3 py-1 border-t ga-1" style="font-size: 0.8rem;">
+                        <v-btn v-if="showCopy" size="x-small" variant="text" icon="mdi-content-copy"
+                            @click="copyToClipboard(messages[index])" v-tooltip:top="'Copy Text'"></v-btn>
+                        <v-btn v-if="showModify" size="x-small" variant="text"
+                            :icon="showmodify ? 'mdi-check' : 'mdi-pencil-outline'" @click="showmodify = !showmodify"
+                            v-tooltip:top="'Edit'"></v-btn>
+                        <v-btn v-if="showContent" size="x-small" variant="text"
+                            :icon="showcontent ? 'mdi-eye-off-outline' : 'mdi-code-tags'"
+                            @click="showcontent = !showcontent" v-tooltip:top="'Toggle Raw / Markdown'"></v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn v-if="showReduce && index > 0" size="x-small" variant="text" color="error"
+                            icon="mdi-format-vertical-align-top" @click="messages.splice(0, index)"
+                            v-tooltip:top="'Trim History Above'"></v-btn>
+                        <v-btn v-if="showDelete" size="x-small" variant="text" color="error" icon="mdi-delete-outline"
+                            @click="messages.splice(index, range)" v-tooltip:top="'Delete Message'"></v-btn>
+                    </div>
+                </v-card>
+            </template>
+        </v-hover>
+    </template>
+
+    <script>
+        const { createApp, ref, reactive, computed, onMounted, watch, nextTick, defineProps, defineComponent } = Vue;
+        const { createVuetify } = Vuetify;
+        const { createPinia, defineStore, storeToRefs } = Pinia;
+        const { createI18n, useI18n } = VueI18n;
+        const en = Vuetify.locale?.en || {};
+        const vuedraggable = window.vuedraggable || window.VueDraggableNext || window.VueDraggable || { template: '<div><slot></slot></div>' };
+
+        const useMcpStore = defineStore("mcpStore", {
+            state: () => ({
+                serverTools: [],
+                loading: true,
+            }),
+            getters: {
+                getServers: () => window.mcpServers,
+            },
+            actions: {
+                listServerResources: function () {
+                    const mcpServers = this.getServers;
+                    if (!mcpServers) return [];
+                    const mcpKeys = Object.keys(mcpServers);
+                    const mcpResources = [];
+                    for (const key of mcpKeys) {
+                        const resources = mcpServers[key]?.resources;
+                        if (resources) {
+                            mcpResources.push({
+                                name: key,
+                                list: resources.list,
+                                templatesList: resources['templates/list']
+                            });
+                        }
+                    }
+                    return mcpResources;
+                },
+                loadTools: function () {
+                    this.loading = true;
+                    try {
+                        this.listTools().then((tools) => {
+                            if (tools) {
+                                this.serverTools = tools.map(tool => ({
+                                    name: tool.function.name,
+                                    description: tool.function.description
+                                }));
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Failed to load tools:', error);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                listTools: async function () {
+                    const mcpServers = this.getServers;
+                    if (!mcpServers) return null;
+                    const mcpKeys = Object.keys(mcpServers);
+                    const mcpTools = [];
+                    for (const key of mcpKeys) {
+                        const toolsListFunction = mcpServers[key]?.tools?.list;
+                        if (typeof toolsListFunction === 'function') {
+                            const tools = await toolsListFunction();
+                            if (tools && Array.isArray(tools.tools)) {
+                                for (const tool of tools.tools) {
+                                    mcpTools.push({
+                                        type: 'function',
+                                        function: {
+                                            name: tool.name,
+                                            description: tool.description,
+                                            parameters: tool.inputSchema,
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    return mcpTools;
+                },
+                getTool: async function (tool_name) {
+                    const mcpServers = this.getServers;
+                    const mcpKeys = Object.keys(mcpServers);
+                    const result = await Promise.any(mcpKeys.map(async (key) => {
+                        const toolsListFunction = mcpServers[key]?.tools?.list;
+                        if (typeof toolsListFunction === 'function') {
+                            const tools = await toolsListFunction();
+                            if (tools && Array.isArray(tools.tools)) {
+                                const foundTool = tools.tools.find(tool => tool.name === tool_name);
+                                if (foundTool) {
+                                    return { server: key, tool: foundTool };
+                                }
+                            }
+                        }
+                        throw new Error(`Tool ${tool_name} not found on server ${key}`);
+                    }));
+                    return result;
+                },
+                callTool: async function (tool_name, tool_args) {
+                    const tool = await this.getTool(tool_name);
+                    if (!tool) return this.packReturn(`Tool name '${tool_name}' not found`);
+                    let tool_arguments;
+                    try {
+                        tool_arguments = JSON.parse(tool_args);
+                    } catch (e) {
+                        return this.packReturn(`Arguments JSON parse error: '${e}'`);
+                    }
+                    const params = {
+                        name: tool_name,
+                        arguments: tool_arguments
+                    };
+                    const result = await this.getServers[tool.server].tools.call(params);
+                    return result;
+                },
+                convertItem: function (item) {
+                    if (item.type === "text") {
+                        return item;
+                    } else if (item.type === "image") {
+                        const imageUrl = `data:${item.mimeType};base64,${item.data}`;
+                        return {
+                            type: 'image_url',
+                            image_url: { url: imageUrl }
+                        };
+                    }
+                },
+                packReturn: (string) => ({
+                    content: [{ type: 'text', text: string }]
+                })
+            },
+        });
+
+        const useAgentStore = defineStore("agentStore", {
+            state: () => ({
+                card: null,
+                columns: [],
+                editDialog: false,
+            }),
+            persist: {
+                enabled: true,
+                strategies: [{ storage: sessionStorage }],
+            },
+            getters: {
+                getDragOption: () => ({
+                    animation: 200,
+                    group: "task",
+                    disabled: false,
+                    ghostClass: "ghost",
+                }),
+            },
+            actions: {
+                addCard(column) {
+                    const { addTitle, key } = column;
+                    if (!addTitle) return;
+                    let newCard = {
+                        id: "_" + Math.random().toString(36).substring(2, 11),
+                        state: key,
+                        title: addTitle,
+                        description: "",
+                        refFile: null,
+                        refText: "",
+                        order: -1,
+                    };
+                    column.cards.unshift(newCard);
+                    column.addTitle = "";
+                    column.isAddVisible = false;
+                },
+                deleteCard(column, index) {
+                    column.cards.splice(index, 1);
+                },
+                editCard(card) {
+                    this.card = { ...card };
+                    this.editDialog = true;
+                },
+                saveCard() {
+                    const editCard = this.card;
+                    if (editCard) {
+                        let foundCard = this.columns
+                            .flatMap(column => column.cards)
+                            .find(card => card.id === this.card.id);
+                        if (foundCard) {
+                            foundCard.title = editCard.title;
+                            foundCard.refText = editCard.refText;
+                            foundCard.refFile = editCard.refFile;
+                            foundCard.description = editCard.description;
+                            this.editDialog = false;
+                        }
+                    }
+                },
+                promptMessage(conversation) {
+                    if (!this.columns[0]) return [...conversation];
+                    const result = this.columns[0].cards
+                        .filter(item => item.description !== "" || item.refText !== "")
+                        .map(item => (
+                            item.refText ? `${item.description}\n###\n${item.refText}\n###` : item.description
+                        ))
+                        .join('\n\n');
+                    if (result) {
+                        return [{ content: result, role: "system" }, ...conversation];
+                    }
+                    return [...conversation];
+                },
+                initAgent() {
+                    this.$reset();
+                    const states = ref(["PROMPT", "BACKUP"]);
+                    const changeState = (e, colIndex) => {
+                        if (e.added || e.moved) {
+                            const column = this.columns[colIndex];
+                            const state = column.key;
+                            for (let i = 0; i < column.cards.length; i++) {
+                                column.cards[i].order = i;
+                                column.cards[i].state = state;
+                            }
+                        }
+                    };
+                    states.value.forEach((state, index) => {
+                        this.columns.push({
+                            key: state,
+                            cards: [],
+                            isAddVisible: false,
+                            callback: (e) => changeState(e, index),
+                        });
+                    });
+                    this.parseCards([
+                        {
+                            id: 1,
+                            title: "System Prompt",
+                            description: "You are PKJ AI, a friendly, extremely capable, and helpful AI assistant created by Prashant Jha.",
+                            state: "PROMPT",
+                        }
+                    ]);
+                },
+                parseCards(cards) {
+                    if (!cards) return this.columns.map((column) => (column.cards = []));
+                    this.columns.forEach((column) => {
+                        column.cards = cards
+                            .filter((card) => card.state === column.key)
+                            .sort((a, b) => (a.order < b.order ? -1 : 0));
+                    });
+                },
+            },
+        });
+
+        const useSettingStore = defineStore("settingStore", {
+            state: () => ({
+                inputRow: 1,
+                avatarSize: 32,
+                configDialog: false,
+                configHistory: false,
+                agentDialog: false,
+                apiKeyShow: false,
+                toolboxShow: false,
+                fontStatus: false,
+            }),
+            actions: {
+                initDialog() {
+                    this.apiKeyShow = false;
+                    this.configDialog = true;
+                },
+                setInputRow(int, timeout) {
+                    setTimeout(() => {
+                        this.inputRow = int;
+                    }, timeout);
+                }
+            },
+        });
+
+        const useResourceStore = defineStore("resourceStore", {
+            state: () => ({
+                resourceDialog: false,
+                tab: null,
+                resourceList: [],
+                resourceTemplatesList: [],
+                loadingTemplates: false,
+                loadingResources: false,
+            }),
+            actions: {
+                loadTemplates: function (resource_function) {
+                    if (!resource_function) return;
+                    this.loadingTemplates = true;
+                    try {
+                        resource_function().then((result) => {
+                            this.resourceTemplatesList = result.resourceTemplates;
+                        });
+                    } catch (error) {
+                        console.error('Failed to load resource templates:', error);
+                    } finally {
+                        this.loadingTemplates = false;
+                    }
+                },
+                loadResources: function (resource_function) {
+                    if (!resource_function) return;
+                    this.loadingResources = true;
+                    try {
+                        resource_function().then((result) => {
+                            this.resourceList = result.resources;
+                        });
+                    } catch (error) {
+                        console.error('Failed to load resources:', error);
+                    } finally {
+                        this.loadingResources = false;
+                    }
+                },
+            },
+        });
+
+        const usePromptStore = defineStore("promptStore", {
+            state: () => ({
+                promptDialog: false,
+                promptSheet: false,
+                promptList: [],
+                promptSelect: {},
+                search: '',
+                loading: false,
+            }),
+            actions: {
+                loadPrompts: function () {
+                    this.loading = true;
+                    try {
+                        this.fetchPrompts().then((prompts) => {
+                            this.promptList = prompts;
+                        });
+                    } catch (error) {
+                        console.error('Failed to load prompts:', error);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                fetchPrompts: async function () {
+                    const mcpStore = useMcpStore();
+                    const mcpServers = mcpStore.getServers;
+                    if (!mcpServers) return [];
+                    const mcpKeys = Object.keys(mcpServers);
+                    const allPrompts = [];
+                    for (const key of mcpKeys) {
+                        const obj = await mcpServers[key]?.prompts?.list();
+                        if (obj && obj.prompts) {
+                            obj.prompts.forEach(prompt => allPrompts.push({ title: key, ...prompt }));
+                        }
+                    }
+                    return allPrompts;
+                },
+                select: function (prompt) {
+                    this.promptSelect = prompt;
+                    this.promptSheet = true;
+                    this.promptDialog = false;
+                },
+                fetchSelect: async function () {
+                    const mcpStore = useMcpStore();
+                    const mcpServers = mcpStore.getServers;
+                    const getFun = mcpServers[this.promptSelect.title]?.prompts?.get;
+                    if (!getFun) return [];
+                    const params = { name: this.promptSelect.name };
+                    if (this.promptSelect.arguments) {
+                        for (const argument of this.promptSelect.arguments) {
+                            if (argument.name) {
+                                if (!params['arguments']) params['arguments'] = {};
+                                params['arguments'][argument.name] = argument.content;
+                            }
+                        }
+                    }
+                    const prompts = await getFun(params);
+                    const conversations = prompts.messages.map(item => {
+                        const content = mcpStore.convertItem(item.content);
+                        return {
+                            role: item.role,
+                            content: item.role == 'user' ? [content] : content.text
+                        };
+                    });
+                    this.promptSheet = false;
+                    return conversations;
+                },
+            },
+        });
+
+        const useSnackbarStore = defineStore("snackbarStore", {
+            state: () => ({
+                isShow: false,
+                message: "",
+                type: "",
+            }),
+            actions: {
+                showMessage(message, type = "") {
+                    this.isShow = true;
+                    this.message = message;
+                    this.type = type;
+                },
+                showErrorMessage(message) { this.showMessage(message, "error"); },
+                showSuccessMessage(message) { this.showMessage(message, "success"); },
+                showInfoMessage(message) { this.showMessage(message, "info"); },
+                showWarningMessage(message) { this.showMessage(message, "warning"); },
+                getIcon() {
+                    const icon = {
+                        info: "mdi-information",
+                        success: "mdi-check-circle",
+                        error: "mdi-alert-circle",
+                        warning: "mdi-alert",
+                    };
+                    return icon[this.type] || "mdi-bell";
+                },
+            },
+        });
+
+        const TuuiImgDialog = {
+            template: '#tuui-img-dialog-template',
+            props: { src: { type: String, required: true } }
+        };
+
+        const TuuiChatCard = defineComponent({
+            template: '#tuui-chat-card-template',
+            props: {
+                index: { type: Number, required: true },
+                range: { type: Number, required: false, default: 1 },
+                messages: { type: Object, required: true },
+                showContent: { type: Boolean, default: false },
+                showDelete: { type: Boolean, default: true },
+                showReduce: { type: Boolean, default: true },
+                showModify: { type: Boolean, default: false },
+                showCopy: { type: Boolean, default: true },
+            },
+            setup(props) {
+                const showcontent = ref(false);
+                const showmodify = ref(false);
+                const snackbarStore = useSnackbarStore();
+
+                const copyToClipboard = async (msg) => {
+                    let textToCopy = '';
+                    try {
+                        if (typeof msg.content === 'string') {
+                            textToCopy = msg.content;
+                        } else if (Array.isArray(msg.content)) {
+                            for (const item of msg.content) {
+                                if (item.type === 'text' && typeof item.text === 'string') {
+                                    textToCopy = item.text;
+                                }
+                            }
+                        }
+                        await navigator.clipboard.writeText(textToCopy);
+                        snackbarStore.showSuccessMessage('$vuetify.dataIterator.snackbar.copied');
+                    } catch (err) {
+                        snackbarStore.showErrorMessage(err.message || 'Failed to copy');
+                    }
+                };
+
+                return { copyToClipboard, showcontent, showmodify };
+            }
+        });
+
+        const TuuiChatBox = {
+            template: '#tuui-chat-box-template',
+            components: { TuuiImgDialog, TuuiChatCard },
+            props: {
+                messages: { type: Array, required: true },
+                size: { type: Number, default: 32 },
+                language: { type: String, default: 'en' },
+                isDark: { type: Boolean, default: true },
+                generating: { type: Boolean, default: false }
+            },
+            setup(props) {
+                const dialogs = reactive({});
+                const groupMessages = computed(() => {
+                    const groups = [];
+                    props.messages.forEach((message, index) => {
+                        if (message.role === 'user') {
+                            groups.push({ index: index, group: 'user', message: message });
+                        } else if ((message.role === 'assistant') && (!message.tool_calls || message.tool_calls.length == 0)) {
+                            groups.push({ index: index, group: 'assistant', message: message });
+                        } else {
+                            const lastGroup = groups.at(-1);
+                            if (lastGroup?.group == 'tool') {
+                                lastGroup.messages.push(message);
+                                dialogs[lastGroup.tab] = lastGroup.length;
+                                lastGroup.length += 1;
+                            } else {
+                                const id = message.tool_call_id || message.tool_calls[0]?.id;
+                                groups.push({
+                                    index: index,
+                                    group: 'tool',
+                                    tab: id,
+                                    messages: [message],
+                                    length: 1
+                                });
+                                dialogs[id] = 0;
+                            }
+                        }
+                    });
+                    return groups;
+                });
+
+                return { dialogs, groupMessages };
+            }
+        };
+
+        const app = createApp({
+            components: {
+                vuedraggable,
+                TuuiChatBox,
+                TuuiChatCard
+            },
+            setup() {
+                const snackbarStore = useSnackbarStore();
+                const mcpStore = useMcpStore();
+                const agentStore = useAgentStore();
+                const settingStore = useSettingStore();
+                const promptStore = usePromptStore();
+                const resourceStore = useResourceStore();
+
+                const { locale } = useI18n({ useScope: 'global' });
+
+                // Theme Mode State (Default Dark, persisted in localStorage)
+                const isDark = ref(localStorage.getItem('pkj_theme') !== 'light');
+                const toggleTheme = () => {
+                    isDark.value = !isDark.value;
+                    localStorage.setItem('pkj_theme', isDark.value ? 'dark' : 'light');
+                };
+
+                const activeConfigTab = ref('endpoint');
+                const historySearch = ref('');
+
+
+                // Starter Prompts for Hero View
+                const starterPrompts = [
+                    {
+                        icon: 'mdi-lightbulb-on-outline',
+                        color: 'primary',
+                        title: 'Explain Simply',
+                        desc: 'Quantum computing and superposition analogies',
+                        prompt: 'Explain the core principles of quantum computing and superposition using clear, intuitive everyday analogies.'
+                    },
+                    {
+                        icon: 'mdi-code-braces',
+                        color: 'secondary',
+                        title: 'Clean Code API',
+                        desc: 'Production-ready REST API in Node.js',
+                        prompt: 'Write a clean, production-ready REST API in Node.js with Express, input validation, error handling middleware, and async/await.'
+                    },
+                    {
+                        icon: 'mdi-chart-timeline-variant',
+                        color: 'info',
+                        title: 'System Design',
+                        desc: 'Scalable architecture for real-time chat',
+                        prompt: 'Design a scalable real-time chat system architecture capable of handling 1M concurrent connections with WebSocket clustering, Redis pub/sub, and persistent storage.'
+                    },
+                    {
+                        icon: 'mdi-creation-outline',
+                        color: 'accent',
+                        title: 'Creative Launch',
+                        desc: 'Compelling product launch announcement',
+                        prompt: 'Draft an exciting and persuasive launch email announcement for an innovative AI developer productivity tool.'
+                    }
+                ];
+
+                const useLanguageStore = defineStore("languageStore", {
+                    state: () => ({
+                        list: [{ title: 'English', value: 'en', name: 'united-states' }]
+                    }),
+                    getters: {
+                        getLocale: () => locale.value,
+                    },
+                    actions: {
+                        change(lang) { locale.value = lang; },
+                        getIcon(name) { return `twemoji:flag-${name}`; },
+                        getIcon2() {
+                            const value = this.getLocale;
+                            const item = this.list.find(lang => lang.value === value);
+                            return `twemoji:flag-${item?.name || 'united-states'}`;
+                        }
+                    },
+                });
+
+                const useMessageStore = defineStore("messageStore", {
+                    state: () => ({
+                        userMessage: "",
+                        conversation: [],
+                        images: [],
+                        base64: '',
+                        generating: false
+                    }),
+                    actions: {
+                        init() {
+                            if (this.conversation.length === 0) {
+                                snackbarStore.showWarningMessage('$vuetify.dataIterator.snackbar.addfail');
+                            } else {
+                                this.conversation = [];
+                                snackbarStore.showSuccessMessage('$vuetify.dataIterator.snackbar.addnew');
+                                nextTick(() => {
+                                    if (window.on3DContainerShow) window.on3DContainerShow();
+                                });
+                            }
+                        },
+                        stop() {
+                            this.generating = false;
+                            snackbarStore.showInfoMessage('$vuetify.dataIterator.snackbar.stopped');
+                        },
+                        clear() {
+                            this.userMessage = "";
+                            this.images = [];
+                            this.base64 = "";
+                        },
+                        handleKeydown(e) {
+                            if (e.key === "Enter" && e.shiftKey) {
+                                // newline
+                            } else if (e.key === "Enter") {
+                                e.preventDefault();
+                                this.sendMessage();
+                            }
+                        },
+                        resendMessage() {
+                            let index = this.conversation.length - 1;
+                            while (index >= 0 && this.conversation[index].role !== "user") {
+                                index--;
+                            }
+                            if (index >= 0) {
+                                this.conversation.splice(index + 1);
+                                this.startInference();
+                            }
+                        },
+                        sendMessage() {
+                            if (this.userMessage.trim()) {
+                                const imageBase64 = this.base64;
+                                this.conversation.push({
+                                    content: imageBase64
+                                        ? [
+                                            { type: "image_url", image_url: { url: imageBase64 } },
+                                            { type: "text", text: this.userMessage }
+                                        ] : this.userMessage,
+                                    role: "user",
+                                });
+
+                                if (this.conversation.length === 1) {
+                                    historyStore.init(this.conversation);
+                                }
+                                this.startInference();
+                            }
+                        },
+                        applyPrompt: async function (fetchedPrompt) {
+                            const messages = await fetchedPrompt;
+                            this.conversation = messages;
+                        },
+                        startInference: async function () {
+                            this.clear();
+                            await createCompletion(this.conversation);
+                            await this.postToolCall();
+                        },
+                        postToolCall: async function () {
+                            const last = this.conversation.at(-1);
+                            if (!last || !last.tool_calls) return;
+                            if (last.tool_calls.length === 0 || Object.keys(last.tool_calls[0]).length === 0) {
+                                delete last.tool_calls;
+                                return;
+                            }
+                            let tool_called = false;
+                            const callNextTool = async (toolCalls, index) => {
+                                if (index >= toolCalls.length) return;
+                                const tool_call = toolCalls[index];
+                                try {
+                                    const result = await mcpStore.callTool(
+                                        tool_call.function.name,
+                                        tool_call.function.arguments
+                                    );
+                                    if (result.content) {
+                                        this.contentConvert(result.content, tool_call.id).forEach(item => {
+                                            this.conversation.push(item);
+                                        });
+                                        tool_called = true;
+                                    }
+                                    await callNextTool(toolCalls, index + 1);
+                                } catch (error) {
+                                    const result = mcpStore.packReturn(`Error calling tool: ${error}`);
+                                    this.conversation.push({
+                                        role: "tool",
+                                        content: result.content,
+                                        tool_call_id: tool_call.id
+                                    });
+                                    tool_called = true;
+                                }
+                            };
+                            await callNextTool(last.tool_calls, 0);
+                            if (tool_called) {
+                                this.startInference();
+                            }
+                        },
+                        contentConvert: function (content, toolCallId) {
+                            const msg = content.map(item => mcpStore.convertItem(item));
+                            if (msg.find(item => item.type === 'image_url')) {
+                                return [
+                                    {
+                                        role: "tool",
+                                        content: mcpStore.packReturn('Image provided in next user message').content,
+                                        tool_call_id: toolCallId
+                                    },
+                                    { role: "user", content: msg }
+                                ];
+                            } else {
+                                return [{
+                                    role: "tool",
+                                    content: msg.map(item => item.text).join('\n'),
+                                    tool_call_id: toolCallId
+                                }];
+                            }
+                        }
+                    }
+                });
+
+                const useHistoryStore = defineStore("historyStore", {
+                    state: () => ({
+                        conversation: [],
+                    }),
+                    persist: {
+                        enabled: true,
+                        strategies: [{ storage: localStorage }],
+                    },
+                    getters: {
+                        getDate: () => new Date().toLocaleString(),
+                    },
+                    actions: {
+                        resetState() { this.$reset(); },
+                        deleteById(index) { this.conversation.splice(index, 1); },
+                        init(conversation) {
+                            this.conversation.unshift({
+                                id: this.getDate,
+                                history: conversation
+                            });
+                        },
+                        replace(id) {
+                            this.deleteById(id);
+                            this.init(messageStore.conversation);
+                        },
+                        asyncReplace: async (id) => {
+                            await nextTick();
+                            historyStore.replace(id);
+                        },
+                        select(id) {
+                            settingStore.configHistory = false;
+                            messageStore.conversation = this.conversation[id].history;
+                            this.asyncReplace(id);
+                        },
+                        getColor(id) {
+                            const targetElement = this.conversation[id]?.history.find(element => element.role === "assistant");
+                            return targetElement ? "primary" : "grey";
+                        },
+                        downloadById(id) {
+                            const name = this.conversation[id].id.replace(/[/: ]/g, '-');
+                            this.download(this.conversation[id].history, `history-${name}.json`);
+                        },
+                        downloadHistory() {
+                            this.download(this.conversation, 'history.json');
+                        },
+                        download(json, filename) {
+                            const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = filename;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        }
+                    }
+                });
+
+                const useDefaultChoiceStore = defineStore("defaultChoiceStore", {
+                    state: () => ({
+                        url: [
+                            "https://text.pollinations.ai/openai",
+                            "https://api.openai.com",
+                            "https://api.deepseek.com",
+                            "https://api.deepinfra.com",
+                            "http://127.0.0.1:11434/v1"
+                        ],
+                        path: [
+                            "/chat/completions",
+                            "/v1/chat/completions",
+                            "/v1/openai/chat/completions",
+                            "/openai/v1/chat/completions"
+                        ],
+                        model: [
+                            "openai",
+                            "deepseek",
+                            "llama",
+                            "mistral",
+                            "qwen-coder",
+                            "meta-llama/Llama-3.3-70B-Instruct",
+                            "deepseek-chat",
+                            "gpt-4o",
+                            "gpt-4o-mini"
+                        ],
+                        authPrefix: ["Bearer", "Base", "Token"],
+                        max_tokens_type: ["max_tokens", "max_completion_tokens", "max_new_tokens"],
+                        temperature: ["0.2", "0.7", "1.0"]
+                    }),
+                    persist: {
+                        enabled: true,
+                        strategies: [{ storage: localStorage }],
+                    },
+                    actions: {
+                        resetState() { this.$reset(); },
+                        updateStoreFromJSON(json) {
+                            this.$reset();
+                            this.$state = json;
+                        }
+                    },
+                });
+
+                const useChatbotStore = defineStore("chatbotStore", {
+                    state: () => ({
+                        apiKey: "",
+                        url: "https://text.pollinations.ai/openai",
+                        path: "/chat/completions",
+                        model: "openai",
+                        authPrefix: "Bearer",
+                        contentType: "application/json",
+                        max_tokens_type: "max_tokens",
+                        max_tokens_value: "",
+                        temperature: "0.7",
+                        top_p: "0.9",
+                        method: "POST",
+                        stream: true,
+                        mcp: false
+                    }),
+                    persist: {
+                        enabled: true,
+                        strategies: [{ storage: localStorage }],
+                    },
+                    actions: {
+                        resetState() {
+                            this.$reset();
+                            defaultChoiceStore.resetState();
+                        },
+                        updateStoreFromJSON(json) {
+                            this.$reset();
+                            this.$state = json;
+                        }
+                    },
+                });
+
+                const chatbotStore = useChatbotStore();
+                const messageStore = useMessageStore();
+                const historyStore = useHistoryStore();
+                const defaultChoiceStore = useDefaultChoiceStore();
+                const languageStore = useLanguageStore();
+
+                const enableFreeModel = () => {
+                    chatbotStore.url = "https://text.pollinations.ai/openai";
+                    chatbotStore.path = "/chat/completions";
+                    chatbotStore.model = "openai";
+                    chatbotStore.authPrefix = "Bearer";
+                    chatbotStore.apiKey = "";
+                    snackbarStore.showSuccessMessage('Activated Free AI model (GPT-4o mini via Pollinations, no key required)!');
+                };
+
+                // Automatically switch to Free AI if user has no key and legacy host
+                if (chatbotStore.url && (chatbotStore.url.includes('aiql.com') || (!chatbotStore.apiKey && chatbotStore.url.includes('deepinfra.com')))) {
+                    chatbotStore.url = "https://text.pollinations.ai/openai";
+                    chatbotStore.path = "/chat/completions";
+                    chatbotStore.model = "openai";
+                }
+                if (Array.isArray(defaultChoiceStore.url)) {
+                    defaultChoiceStore.url = defaultChoiceStore.url.filter(u => !u.includes('aiql.com'));
+                    if (!defaultChoiceStore.url.includes('https://text.pollinations.ai/openai')) {
+                        defaultChoiceStore.url.unshift('https://text.pollinations.ai/openai');
+                    }
+                }
+
+                const filteredHistory = computed(() => {
+                    if (!historySearch.value) return historyStore.conversation;
+                    const q = historySearch.value.toLowerCase();
+                    return historyStore.conversation.filter(item => {
+                        const firstMsg = item.history[0]?.content[1]?.text || item.history[0]?.content || "";
+                        return firstMsg.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
+                    });
+                });
+
+                const useStarterPrompt = (promptText) => {
+                    messageStore.userMessage = promptText;
+                    nextTick(() => {
+                        messageStore.sendMessage();
+                    });
+                };
+
+                const createCompletion = async (rawconversation) => {
+                    const isKeyless = chatbotStore.url && (
+                        chatbotStore.url.includes('127.0.0.1') || 
+                        chatbotStore.url.includes('localhost') ||
+                        chatbotStore.url.includes('pollinations.ai')
+                    );
+                    if (!chatbotStore.apiKey.trim() && !isKeyless) {
+                        snackbarStore.showWarningMessage('API Key required for this provider. Switch to Free AI or enter your key in Settings.');
+                        settingStore.initDialog();
+                        messageStore.generating = false;
+                        return;
+                    }
+
+                    const conversation = rawconversation.reduce((newConversation, item) => {
+                        if (item.role === "assistant") {
+                            const { reasoning_content, ...rest } = item;
+                            newConversation.push(rest);
+                        } else {
+                            newConversation.push(item);
+                        }
+                        return newConversation;
+                    }, []);
+
+                    try {
+                        messageStore.generating = true;
+                        const headers = { "Content-Type": chatbotStore.contentType };
+                        if (chatbotStore.apiKey && !chatbotStore.url.includes('pollinations.ai')) {
+                            headers.Authorization = `${chatbotStore.authPrefix} ${chatbotStore.apiKey}`;
+                        }
+
+                        const body = {
+                            messages: agentStore.promptMessage(conversation),
+                            model: chatbotStore.model,
+                            stream: chatbotStore.stream,
+                        };
+
+                        if (chatbotStore.max_tokens_value) {
+                            body[chatbotStore.max_tokens_type] = parseInt(chatbotStore.max_tokens_value);
+                        }
+                        if (chatbotStore.temperature) {
+                            body["temperature"] = parseFloat(chatbotStore.temperature);
+                        }
+                        if (chatbotStore.top_p) {
+                            body["top_p"] = parseFloat(chatbotStore.top_p);
+                        }
+                        if (chatbotStore.mcp) {
+                            body["tools"] = await mcpStore.listTools();
+                        }
+
+                        const request = {
+                            headers: headers,
+                            method: chatbotStore.method,
+                            body: JSON.stringify(body),
+                        };
+
+                        const completion = await fetch(
+                            chatbotStore.url + (chatbotStore.path ? chatbotStore.path : ''),
+                            request
+                        );
+
+                        if (!completion.ok) {
+                            if (completion.status === 401) {
+                                snackbarStore.showErrorMessage('401 Unauthorized: Invalid or missing API key. Please configure your key in Settings.');
+                                settingStore.initDialog();
+                                return;
+                            }
+                            let errorText = completion.statusText;
+                            try {
+                                const errorData = await completion.json();
+                                if (errorData.error?.message) errorText = errorData.error.message;
+                                else if (errorData.detail && errorData.detail[0]?.msg) errorText = errorData.detail[0].msg;
+                            } catch (_) { }
+                            snackbarStore.showErrorMessage(`${completion.status}: ${errorText}`);
+                            return;
+                        }
+
+                        const reader = completion.body?.getReader();
+                        if (!reader) {
+                            snackbarStore.showErrorMessage('$vuetify.dataIterator.snackbar.parseStreamFail');
+                            return;
+                        }
+
+                        messageStore.conversation.push({
+                            content: "",
+                            reasoning_content: "",
+                            tool_calls: [],
+                            role: "assistant",
+                        });
+
+                        let buffer = '';
+                        await read(reader, messageStore.conversation.at(-1), buffer, chatbotStore.stream);
+                    } catch (error) {
+                        snackbarStore.showErrorMessage(error.message);
+                    } finally {
+                        messageStore.generating = false;
+                    }
+                };
+
+                const read = async (reader, target, buffer, stream) => {
+                    const decoder = new TextDecoder();
+                    const { done, value } = await reader.read();
+
+                    if (done || !messageStore.generating) {
+                        messageStore.generating = false;
+                        return reader.releaseLock();
+                    }
+
+                    const chunks = decoder.decode(value);
+                    if (stream) {
+                        let parts = chunks.split('\n');
+                        if (parts.length === 1) {
+                            buffer += parts[0];
+                            return read(reader, target, buffer, stream);
+                        }
+                        if (buffer.length > 0) {
+                            parts[0] = buffer + parts[0];
+                            buffer = '';
+                        }
+                        const last = parts[parts.length - 1];
+                        if (last && last.length > 0) {
+                            buffer = parts.pop();
+                        }
+                        parts
+                            .map((line) => line.trim())
+                            .filter((line) => line.length > 0)
+                            .forEach((line) => {
+                                const pos = line.indexOf(':');
+                                const name = line.substring(0, pos);
+                                if (name !== 'data') return;
+                                const content = line.substring(pos + 1).trim();
+                                if (content.length === 0 || content === "[DONE]") return;
+                                parseJson(content, target);
+                            });
+                    } else {
+                        parseJson(chunks, target);
+                    }
+
+                    return read(reader, target, buffer, stream);
+                };
+
+                const parseJson = (content, target) => {
+                    try {
+                        const parsed = JSON.parse(content);
+                        parseChoices(parsed, target);
+                    } catch (e) {
+                        parseChoice(content, target);
+                    }
+                };
+
+                const parseChoices = (parsed, target) => {
+                    if ('choices' in parsed) {
+                        return parsed.choices.map((choice) => {
+                            const content = choice.delta || choice.message;
+                            return parseChoice(content, target);
+                        });
+                    } else if ('response' in parsed) {
+                        return parseChoice(parsed.response, target);
+                    } else {
+                        return parseChoice(parsed, target);
+                    }
+                };
+
+                const parseChoice = (choice, target) => {
+                    if (choice && target.role == 'assistant') {
+                        if (typeof choice === 'string') {
+                            target.content += choice;
+                        } else if (typeof choice.content === 'string') {
+                            target.content += choice.content;
+                        } else if (typeof choice.reasoning_content === 'string') {
+                            target.reasoning_content += choice.reasoning_content;
+                        }
+                        parseTool(choice.tool_calls, target);
+                    }
+                };
+
+                const parseTool = (tools, target) => {
+                    if (tools) {
+                        tools.map((tool) => {
+                            const lastTool = target.tool_calls.at(-1);
+                            if (lastTool && (!tool.id || lastTool.id == tool.id)) {
+                                const source = tool.function;
+                                for (const key in source) {
+                                    if (source[key] === null) continue;
+                                    if (lastTool.function[key]) {
+                                        lastTool.function[key] += source[key];
+                                    } else {
+                                        lastTool.function[key] = source[key];
+                                    }
+                                }
+                            } else {
+                                target.tool_calls.push(tool);
+                            }
+                        });
+                    }
+                };
+
+                watch(computed(() => messageStore.conversation.at(-1)?.content),
+                    (newValue, oldValue) => {
+                        if (newValue !== oldValue) {
+                            asyncScrollToBottom();
+                        }
+                    }, { deep: true });
+
+                watch(computed(() => messageStore.images),
+                    (newValue) => {
+                        if (!newValue || newValue.length === 0) {
+                            messageStore.base64 = '';
+                        } else {
+                            const file = messageStore.images;
+                            const reader = new FileReader();
+                            const MAX_WIDTH = 2048;
+                            const MAX_HEIGHT = 2048;
+
+                            reader.onload = (e) => {
+                                const img = new Image();
+                                img.onload = () => {
+                                    let width = img.width;
+                                    let height = img.height;
+                                    let quality = 0.8;
+                                    if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                                        const scaleFactor = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+                                        width *= scaleFactor;
+                                        height *= scaleFactor;
+                                        quality *= scaleFactor;
+                                    }
+                                    const canvas = document.createElement('canvas');
+                                    const ctx = canvas.getContext('2d');
+                                    canvas.width = width;
+                                    canvas.height = height;
+                                    ctx.drawImage(img, 0, 0, width, height);
+                                    messageStore.base64 = canvas.toDataURL('image/jpeg', quality);
+                                };
+                                img.src = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }, { deep: true });
+
+                const asyncScrollToBottom = async () => {
+                    requestAnimationFrame(() => {
+                        scrollToBottom(document.querySelector(".chat-bot"));
+                    });
+                };
+
+                const scrollToBottom = (element, options = { behavior: "smooth" }) => {
+                    window.scrollTo({
+                        ...options,
+                        top: document.body.scrollHeight || document.documentElement.scrollHeight
+                    });
+                };
+
+                onMounted(async () => {
+                    try {
+                        agentStore.initAgent();
+                    } catch (e) {
+                        console.warn('Agent store init warning:', e);
+                    }
+                    try {
+                        resizeAvatar();
+                        window.onresize = () => resizeAvatar();
+                    } catch (e) { }
+                });
+
+                const resizeAvatar = () => {
+                    settingStore.avatarSize = window.innerWidth <= 1279 ? 28 : 34;
+                };
+
+                const configFile = ref(null);
+                watch(configFile, (newValue) => {
+                    if (newValue) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            try {
+                                const json = JSON.parse(event.target.result);
+                                chatbotStore.updateStoreFromJSON(json.chatbotStore);
+                                defaultChoiceStore.updateStoreFromJSON(json.defaultChoiceStore);
+                                snackbarStore.showSuccessMessage('Configuration imported successfully!');
+                            } catch {
+                                snackbarStore.showErrorMessage('$vuetify.dataIterator.snackbar.parseConfigFail');
+                            }
+                        };
+                        reader.readAsText(newValue);
+                    }
+                });
+
+                watch(computed(() => agentStore.card?.refFile),
+                    (newValue) => {
+                        const reader = new FileReader();
+                        if (agentStore.card?.refFile === null) {
+                            agentStore.card.refText = "";
+                            return;
+                        }
+                        if (newValue?.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                            reader.onload = (event) => {
+                                mammoth.extractRawText({ arrayBuffer: event.target.result })
+                                    .then(result => { agentStore.card.refText = result.value; })
+                                    .catch(err => console.error(err));
+                            };
+                            reader.readAsArrayBuffer(newValue);
+                        } else if (newValue?.name?.length > 0) {
+                            reader.onload = (event) => { agentStore.card.refText = event.target.result; };
+                            reader.readAsText(newValue);
+                        }
+                    }, { deep: true });
+
+                const resetALL = () => {
+                    historyStore.resetState();
+                    chatbotStore.resetState();
+                    defaultChoiceStore.resetState();
+                    snackbarStore.showInfoMessage('All configurations reset to defaults.');
+                };
+
+                return {
+                    configFile,
+                    settingStore,
+                    promptStore,
+                    resourceStore,
+                    agentStore,
+                    snackbarStore,
+                    mcpStore,
+                    messageStore,
+                    defaultChoiceStore,
+                    chatbotStore,
+                    historyStore,
+                    languageStore,
+                    enableFreeModel,
+                    resetALL,
+                    isDark,
+                    toggleTheme,
+                    triggerRobotAction,
+                    starterPrompts,
+                    useStarterPrompt,
+                    activeConfigTab,
+                    historySearch,
+                    filteredHistory,
+                };
+            }
+        });
+
+        const messages = {
+            en: {
+                $vuetify: {
+                    ...en,
+                    dataIterator: {
+                        title: 'PKJ AI',
+                        q: { title: 'Conversation History' },
+                        p: {
+                            title: 'Prompt Templates',
+                            sheet: 'Prompt Parameters',
+                            inuse: 'In Use',
+                            standby: 'Standby'
+                        },
+                        l: { title: 'Language' },
+                        a: { title: 'Agents & Prompt Board' },
+                        r: { title: 'MCP Resources' },
+                        g: {
+                            new: 'New Conversation',
+                            reg: 'Regenerate'
+                        },
+                        i: {
+                            title: 'Interface & Model Settings',
+                            apikey: 'API Key',
+                            endpoint: 'Endpoint',
+                            url: 'Base URL',
+                            path: 'Path',
+                            model: 'Model Name',
+                            advanced: 'Advanced Parameters',
+                            method: 'HTTP Method',
+                            stream: 'Stream Response',
+                            mcp: 'Enable MCP Tools',
+                            maxTokensPrefix: 'Max Tokens Param',
+                            temperature: 'Temperature',
+                            topP: 'Top P',
+                            contentType: 'Content Type',
+                            authPrefix: 'Authorization Prefix',
+                            configFile: 'Upload Configuration JSON'
+                        },
+                        snackbar: {
+                            addnew: 'Started new conversation session.',
+                            addfail: 'Already in a clean conversation.',
+                            stopped: 'Generation stopped by user.',
+                            parseStreamFail: 'Unable to parse API stream.',
+                            parseConfigFail: 'Failed to parse configuration file.',
+                            copied: 'Copied message to clipboard!'
+                        }
+                    },
+                },
+            },
+        };
+
+        const i18n = createI18n({
+            legacy: false,
+            locale: 'en',
+            fallbackLocale: 'en',
+            messages,
+        });
+
+        let vuetifyLocale = undefined;
+        if (typeof Vuetify.createVueI18nAdapter === 'function') {
+            try {
+                vuetifyLocale = {
+                    adapter: Vuetify.createVueI18nAdapter({ i18n, useI18n }),
+                };
+            } catch (e) {
+                console.warn('Vuetify i18n adapter fallback:', e);
+            }
+        }
+
+        const vuetify = createVuetify({
+            components: Vuetify.components || {},
+            directives: Vuetify.directives || {},
+            ...(vuetifyLocale ? { locale: vuetifyLocale } : {}),
+            theme: {
+                defaultTheme: 'dark',
+                themes: {
+                    dark: {
+                        dark: true,
+                        colors: {
+                            primary: '#6366f1',
+                            secondary: '#a855f7',
+                            accent: '#38bdf8',
+                            info: '#06b6d4',
+                            success: '#10b981',
+                            warning: '#f59e0b',
+                            error: '#ef4444',
+                            background: '#090d16',
+                            surface: '#111827',
+                            'surface-variant': '#1e293b',
+                            'on-surface': '#f8fafc',
+                            'on-background': '#f8fafc',
+                        }
+                    },
+                    light: {
+                        dark: false,
+                        colors: {
+                            primary: '#4f46e5',
+                            secondary: '#9333ea',
+                            accent: '#0284c7',
+                            info: '#0891b2',
+                            success: '#059669',
+                            warning: '#d97706',
+                            error: '#dc2626',
+                            background: '#f8fafc',
+                            surface: '#ffffff',
+                            'surface-variant': '#f1f5f9',
+                            'on-surface': '#0f172a',
+                            'on-background': '#0f172a',
+                        }
+                    }
+                }
+            }
+        });
+
+        const pinia = createPinia();
+        const persistPlugin = window.piniaPersist?.default || (typeof window.piniaPersist === 'function' ? window.piniaPersist : null) || window.PiniaPluginPersist?.default;
+        if (persistPlugin) {
+            pinia.use(persistPlugin);
+        }
+
+        app.use(i18n);
+        app.use(vuetify);
+        app.use(pinia);
+
+        if (window.MdEditorV3?.MdPreview) {
+            app.use(window.MdEditorV3.MdPreview);
+        }
+
+        // Fallback directive for tooltip
+        app.directive('tooltip', {
+            mounted(el, binding) {
+                try {
+                    const target = (el && typeof el.setAttribute === 'function') ? el : (el?.$el && typeof el.$el?.setAttribute === 'function' ? el.$el : null);
+                    if (target && binding?.value) target.setAttribute('title', String(binding.value));
+                } catch (_) {}
+            },
+            updated(el, binding) {
+                try {
+                    const target = (el && typeof el.setAttribute === 'function') ? el : (el?.$el && typeof el.$el?.setAttribute === 'function' ? el.$el : null);
+                    if (target && binding?.value) target.setAttribute('title', String(binding.value));
+                } catch (_) {}
+            }
+        });
+
+        try {
+            app.mount('#app');
+            console.log('PKJ AI App mounted successfully');
+            if (typeof hideLoadingScreen === 'function') hideLoadingScreen();
+        } catch (err) {
+            console.error('Fatal error during Vue mount:', err);
+            const appEl = document.getElementById('app');
+            if (appEl) appEl.removeAttribute('v-cloak');
+            if (typeof hideLoadingScreen === 'function') hideLoadingScreen();
+
+            const banner = document.createElement('div');
+            banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);max-width:90%;background:#ef4444;color:#fff;padding:12px 20px;border-radius:10px;font-family:sans-serif;font-size:13px;z-index:999999;box-shadow:0 10px 25px rgba(0,0,0,0.5);display:flex;align-items:center;gap:12px;';
+            banner.innerHTML = `<span><strong>Mount Notice:</strong> ${err.message || 'Initialization issue'}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;">✕</button>`;
+            document.body.appendChild(banner);
+        }
+    </script>
+</body>
+
+</html>

@@ -2655,6 +2655,10 @@
                     snackbarStore.showInfoMessage('All configurations reset to defaults.');
                 };
 
+                const triggerRobotAction = (action) => {
+                    console.log('Action triggered:', action);
+                };
+
                 return {
                     configFile,
                     settingStore,
@@ -2740,21 +2744,14 @@
             messages,
         });
 
-        let vuetifyLocale = undefined;
-        if (typeof Vuetify.createVueI18nAdapter === 'function') {
-            try {
-                vuetifyLocale = {
-                    adapter: Vuetify.createVueI18nAdapter({ i18n, useI18n }),
-                };
-            } catch (e) {
-                console.warn('Vuetify i18n adapter fallback:', e);
-            }
-        }
-
         const vuetify = createVuetify({
-            components: Vuetify.components || {},
-            directives: Vuetify.directives || {},
-            ...(vuetifyLocale ? { locale: vuetifyLocale } : {}),
+            ...(Vuetify.components ? { components: Vuetify.components } : {}),
+            ...(Vuetify.directives ? { directives: Vuetify.directives } : {}),
+            locale: {
+                adapter: (typeof Vuetify.createVueI18nAdapter === 'function')
+                    ? Vuetify.createVueI18nAdapter({ i18n, useI18n })
+                    : { i18n, useI18n },
+            },
             theme: {
                 defaultTheme: 'dark',
                 themes: {

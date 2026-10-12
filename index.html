@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
     <meta name="description"
         content="PKJ AI - Next-generation Intelligent Assistant designed and developed by Prashant Jha. Powered by interactive 3D developer workspace, LLaMA 3.3, MCP tools, and multimodal capabilities.">
     <link rel="icon" href="img/favicon.ico" type="image/icon">
@@ -589,6 +589,112 @@
         .md-editor-preview code {
             font-family: var(--font-mono) !important;
         }
+
+        /* ==========================================================================
+           Mobile Screen Optimization & Responsive Enhancements
+           ========================================================================== */
+        @media (max-width: 600px) {
+            html, body {
+                overflow-x: hidden;
+            }
+
+            .chat-bot {
+                padding-top: 0.5rem;
+                padding-bottom: 110px;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .hero-section {
+                min-height: auto;
+                padding: 1.25rem 0.5rem 120px;
+            }
+
+            .hero-image-frame {
+                width: 140px;
+                height: 140px;
+                border-radius: 20px;
+            }
+
+            .hero-orb {
+                width: 240px;
+                height: 240px;
+                filter: blur(40px);
+            }
+
+            .hero-status-badge {
+                font-size: 0.68rem;
+                padding: 4px 12px;
+                bottom: -10px;
+                letter-spacing: 0.04em;
+            }
+
+            .starter-card {
+                padding: 0.85rem 1rem !important;
+                border-radius: 14px !important;
+            }
+
+            .chat-message-row {
+                padding: 0.5rem 0;
+                margin-bottom: 0.5rem;
+            }
+
+            .user-bubble-card,
+            .assistant-bubble-card {
+                border-radius: 16px !important;
+            }
+
+            .input-dock-wrap {
+                bottom: max(8px, env(safe-area-inset-bottom, 8px));
+                padding: 0 8px;
+            }
+
+            .input-dock {
+                border-radius: 20px !important;
+                padding: 4px 8px 4px 10px !important;
+            }
+
+            .input-dock-footer {
+                display: none !important;
+            }
+
+            .floating-action-pill {
+                bottom: 80px;
+                right: 12px;
+            }
+
+            .dialog-card {
+                width: 96vw !important;
+                max-width: 96vw !important;
+                margin: 8px auto !important;
+                border-radius: 16px !important;
+            }
+
+            .dialog-card .v-card-text {
+                padding: 12px !important;
+                max-height: 65vh !important;
+            }
+
+            /* Prevent markdown content, code blocks and tables from overflowing */
+            .md-editor-preview {
+                font-size: 0.88rem !important;
+                line-height: 1.55 !important;
+                word-break: break-word !important;
+                overflow-wrap: break-word !important;
+            }
+
+            .md-editor-preview pre {
+                max-width: 100% !important;
+                overflow-x: auto !important;
+                padding: 0.75rem !important;
+            }
+
+            .md-editor-preview table {
+                display: block !important;
+                max-width: 100% !important;
+                overflow-x: auto !important;
+            }
+        }
     </style>
 </head>
 
@@ -642,64 +748,70 @@
 
                 <!-- Free AI Active indicator -->
                 <v-chip v-if="chatbotStore.url.includes('pollinations.ai')"
-                    variant="flat" color="teal-darken-1" size="small" class="mx-1 font-weight-bold"
+                    variant="flat" color="teal-darken-1" size="small" class="mx-1 font-weight-bold d-none d-sm-inline-flex"
                     prepend-icon="mdi-gift-outline" @click="settingStore.initDialog" style="cursor: pointer;">
                     Free AI Active
+                </v-chip>
+                <v-chip v-if="chatbotStore.url.includes('pollinations.ai')"
+                    variant="flat" color="teal-darken-1" size="x-small" class="mx-1 font-weight-bold d-inline-flex d-sm-none"
+                    @click="settingStore.initDialog" style="cursor: pointer;">
+                    <v-icon size="12" start>mdi-gift-outline</v-icon>Free
                 </v-chip>
 
                 <!-- Set API Key Alert Pill if missing key on remote host -->
                 <v-chip v-else-if="!chatbotStore.apiKey && !chatbotStore.url.includes('127.0.0.1') && !chatbotStore.url.includes('localhost')"
-                    variant="flat" color="warning" size="small" class="mx-1 font-weight-bold"
+                    variant="flat" color="warning" size="small" class="mx-1 font-weight-bold d-none d-sm-inline-flex"
                     prepend-icon="mdi-gift-outline" @click="enableFreeModel" style="cursor: pointer;">
                     Switch to Free AI (No Key)
                 </v-chip>
+                <v-chip v-else-if="!chatbotStore.apiKey && !chatbotStore.url.includes('127.0.0.1') && !chatbotStore.url.includes('localhost')"
+                    variant="flat" color="warning" size="x-small" class="mx-1 font-weight-bold d-inline-flex d-sm-none"
+                    @click="enableFreeModel" style="cursor: pointer;">
+                    <v-icon size="12" start>mdi-gift-outline</v-icon>Free AI
+                </v-chip>
 
-                <!-- New Chat Quick Action -->
-                <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-plus"
-                    @click="chatbotStore.newConversation"
-                    class="mx-1 text-none font-weight-medium d-none d-sm-inline-flex"
-                    v-tooltip:bottom="'Start New Chat'">
-                    New Chat
-                </v-btn>
-
-                <!-- Portfolio Link -->
+                <!-- Portfolio Link (Desktop only) -->
                 <v-btn variant="text" size="small" href="https://prashay.github.io/prashantj/projects.html"
                     target="_blank" prepend-icon="mdi-open-in-new"
-                    class="d-none d-sm-inline-flex text-none text-caption">
+                    class="d-none d-md-inline-flex text-none text-caption">
                     Projects
                 </v-btn>
 
-                <!-- New Conversation Button -->
+                <!-- New Conversation Button (Icon on mobile, Button on sm+) -->
+                <v-btn icon size="small" variant="tonal" color="primary" @click="messageStore.init()"
+                    class="mx-1 d-inline-flex d-sm-none" v-tooltip:bottom="'New Chat'">
+                    <v-icon size="18">mdi-plus</v-icon>
+                </v-btn>
                 <v-btn variant="tonal" color="primary" size="small" prepend-icon="mdi-plus" @click="messageStore.init()"
-                    class="mx-1 text-none font-weight-medium">
+                    class="mx-1 text-none font-weight-medium d-none d-sm-inline-flex">
                     New Chat
                 </v-btn>
 
                 <!-- History Button -->
-                <v-btn icon size="small" @click="settingStore.configHistory = true" class="mx-1"
+                <v-btn icon size="small" @click="settingStore.configHistory = true" class="mx-0 mx-sm-1"
                     v-tooltip:bottom="'Conversation History'">
                     <v-badge :content="historyStore.conversation.length" color="primary"
                         :model-value="historyStore.conversation.length > 0">
-                        <v-icon size="20">mdi-history</v-icon>
+                        <v-icon size="19">mdi-history</v-icon>
                     </v-badge>
                 </v-btn>
 
-                <!-- Agent & Prompts Kanban -->
-                <v-btn icon size="small" @click="settingStore.agentDialog = true" class="mx-1"
+                <!-- Agent & Prompts Kanban (Desktop & Tablet) -->
+                <v-btn icon size="small" @click="settingStore.agentDialog = true" class="mx-1 d-none d-sm-inline-flex"
                     v-tooltip:bottom="'Prompts & Agent Board'">
-                    <v-icon size="20">mdi-view-dashboard-outline</v-icon>
+                    <v-icon size="19">mdi-view-dashboard-outline</v-icon>
                 </v-btn>
 
                 <!-- Settings Button -->
-                <v-btn icon size="small" @click="settingStore.initDialog" class="mx-1"
+                <v-btn icon size="small" @click="settingStore.initDialog" class="mx-0 mx-sm-1"
                     v-tooltip:bottom="'Settings & Models'">
-                    <v-icon size="20">mdi-cog-outline</v-icon>
+                    <v-icon size="19">mdi-cog-outline</v-icon>
                 </v-btn>
 
                 <!-- Theme Toggle Button -->
-                <v-btn icon size="small" @click="toggleTheme" class="mx-1" :color="isDark ? 'amber-darken-1' : 'indigo'"
+                <v-btn icon size="small" @click="toggleTheme" class="mx-0 mx-sm-1" :color="isDark ? 'amber-darken-1' : 'indigo'"
                     v-tooltip:bottom="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
-                    <v-icon size="20">{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+                    <v-icon size="19">{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
                 </v-btn>
             </v-app-bar>
 
@@ -827,7 +939,7 @@
                             <!-- Auto-growing Textarea Input -->
                             <v-textarea class="flex-grow-1 mx-1" variant="plain" density="compact" auto-grow rows="1"
                                 max-rows="8" hide-details v-model="messageStore.userMessage"
-                                placeholder="Ask anything or request code... (Shift + Enter for new line)"
+                                placeholder="Ask anything or request code..."
                                 @keydown="messageStore.handleKeydown"
                                 style="font-size: 0.95rem; line-height: 1.5;"></v-textarea>
 
@@ -851,7 +963,7 @@
 
                         </div>
                     </v-sheet>
-                    <div class="input-dock-footer text-medium-emphasis">
+                    <div class="input-dock-footer text-medium-emphasis d-none d-sm-block">
                         PKJ AI Assistant • Press <kbd class="px-1 py-0.5 rounded border">Enter</kbd> to send, <kbd
                             class="px-1 py-0.5 rounded border">Shift + Enter</kbd> for new line
                     </div>
@@ -880,10 +992,16 @@
                         <v-icon icon="mdi-history" color="primary" class="mr-2"></v-icon>
                         <span class="font-weight-bold">{{ $t('$vuetify.dataIterator.q.title') }}</span>
                         <v-spacer></v-spacer>
+                        <v-btn size="small" variant="tonal" color="primary" icon="mdi-download"
+                            class="mr-1 d-inline-flex d-sm-none" @click="historyStore.downloadHistory"
+                            v-tooltip:top="'Export JSON'"></v-btn>
                         <v-btn size="small" variant="tonal" color="primary" prepend-icon="mdi-download"
-                            class="mr-2 text-none" @click="historyStore.downloadHistory">Export JSON</v-btn>
+                            class="mr-2 text-none d-none d-sm-inline-flex" @click="historyStore.downloadHistory">Export JSON</v-btn>
+                        <v-btn size="small" variant="tonal" color="error" icon="mdi-delete-sweep"
+                            class="mr-1 d-inline-flex d-sm-none" @click="historyStore.resetState"
+                            v-tooltip:top="'Clear All'"></v-btn>
                         <v-btn size="small" variant="tonal" color="error" prepend-icon="mdi-delete-sweep"
-                            class="mr-2 text-none" @click="historyStore.resetState">Clear All</v-btn>
+                            class="mr-2 text-none d-none d-sm-inline-flex" @click="historyStore.resetState">Clear All</v-btn>
                         <v-btn icon="mdi-close" size="small" variant="text"
                             @click="settingStore.configHistory = false"></v-btn>
                     </v-card-title>
@@ -942,7 +1060,7 @@
                             @click="settingStore.configDialog = false"></v-btn>
                     </v-card-title>
 
-                    <v-tabs v-model="activeConfigTab" color="primary" density="compact" class="px-4 border-b">
+                    <v-tabs v-model="activeConfigTab" color="primary" density="compact" class="px-2 px-sm-4 border-b" show-arrows>
                         <v-tab value="endpoint" class="text-none">Endpoint & Model</v-tab>
                         <v-tab value="params" class="text-none">Parameters</v-tab>
                         <v-tab value="config" class="text-none">Import / Export</v-tab>
@@ -1296,11 +1414,11 @@
 
             <!-- User Message Row -->
             <div v-if="group.group === 'user'" class="d-flex align-start justify-end">
-                <div style="max-width: 85%;">
+                <div style="max-width: calc(100% - 46px);">
                     <tuui-chat-card class="user-bubble-card" :index="group.index" :messages="messages"
                         :show-modify="true">
                         <template v-slot:default="{ showmodify }">
-                            <div class="pa-4">
+                            <div class="pa-3 pa-sm-4">
                                 <div v-if="Array.isArray(group.message.content)">
                                     <div v-for="(item, idx) in group.message.content" :key="idx">
                                         <tuui-img-dialog v-if="item.type == 'image_url'"
@@ -1319,21 +1437,21 @@
                         </template>
                     </tuui-chat-card>
                 </div>
-                <v-avatar size="32" color="primary" class="ml-3 mt-1 font-weight-bold">
+                <v-avatar size="32" color="primary" class="ml-2 ml-sm-3 mt-1 font-weight-bold">
                     <v-icon icon="mdi-account" size="18" color="white"></v-icon>
                 </v-avatar>
             </div>
 
             <!-- Assistant Message Row -->
             <div v-if="group.group === 'assistant'" class="d-flex align-start justify-start">
-                <v-avatar size="34" class="mr-3 mt-1" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
+                <v-avatar size="34" class="mr-2 mr-sm-3 mt-1" style="background: linear-gradient(135deg, #6366f1, #a855f7);">
                     <v-icon icon="mdi-laptop-account" size="18" color="white"></v-icon>
                 </v-avatar>
-                <div style="max-width: 90%; flex: 1;">
+                <div style="max-width: calc(100% - 46px); flex: 1; min-width: 0;">
                     <tuui-chat-card class="assistant-bubble-card" :index="group.index" :messages="messages"
                         :show-content="true">
                         <template v-slot:default="{ showcontent }">
-                            <div class="pa-4">
+                            <div class="pa-3 pa-sm-4">
 
                                 <!-- DeepSeek / Reasoning Content Accordion -->
                                 <div v-if="group.message.reasoning_content" class="reasoning-box">
@@ -1380,10 +1498,10 @@
 
             <!-- Tool Execution Message Row -->
             <div v-if="group.group === 'tool'" class="d-flex align-start justify-start">
-                <v-avatar size="34" color="brown-darken-1" class="mr-3 mt-1">
+                <v-avatar size="34" color="brown-darken-1" class="mr-2 mr-sm-3 mt-1">
                     <v-icon icon="mdi-hammer-wrench" size="18" color="white"></v-icon>
                 </v-avatar>
-                <div style="max-width: 90%; flex: 1;">
+                <div style="max-width: calc(100% - 46px); flex: 1; min-width: 0;">
                     <tuui-chat-card class="assistant-bubble-card" :messages="messages" :show-copy="false"
                         :index="group.index" :range="group.messages.length">
                         <v-tabs v-model="dialogs[group.tab]" :items="group.messages" density="compact">
